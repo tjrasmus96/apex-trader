@@ -2,1231 +2,671 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="theme-color" content="#030508"/>
-<title>APEX TRADER ULTIMATE</title>
-<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;Apex Trader&quot;,&quot;short_name&quot;:&quot;Apex&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;%23030508&quot;,&quot;theme_color&quot;:&quot;%23030508&quot;}"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<meta name="theme-color" content="#020407"/>
+<title>APEX TRADER</title>
+<link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;600;800&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet"/>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#030508;--bg2:#07090f;--bg3:#0c0f1a;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
-  --g1:#00ff88;--g2:#00d4ff;--g3:#ffd700;--danger:#ff3355;--purple:#b44fff;
-  --text:#d8dde8;--muted:#444c5e;--mono:'Share Tech Mono',monospace;
-  --display:'Orbitron',sans-serif;--body:'Rajdhani',sans-serif;
+  --bg:#020407;--bg2:#060c12;--bg3:#0a1520;
+  --g1:#00e5ff;--g2:#00ff9d;--g3:#ffcc00;
+  --danger:#ff2d55;--purple:#bf5fff;
+  --border:rgba(0,229,255,0.1);--border2:rgba(0,229,255,0.2);
+  --text:#c8d8e8;--muted:#3a5060;
+  --mono:'JetBrains Mono',monospace;--display:'Oxanium',sans-serif;
 }
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--body);overflow:hidden;}
-#app{display:flex;flex-direction:column;height:100vh;height:100dvh;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--display);overflow:hidden;}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;position:relative;}
 
-/* ── HEADER ── */
-#header{
-  background:linear-gradient(180deg,rgba(0,255,136,0.06) 0%,transparent 100%);
-  border-bottom:1px solid var(--border);
+/* scanline overlay */
+#app::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,229,255,0.015) 3px);pointer-events:none;z-index:100;}
+
+/* HEADER */
+#hdr{
   padding:10px 14px 8px;flex-shrink:0;
+  background:linear-gradient(180deg,rgba(0,229,255,0.06) 0%,transparent 100%);
+  border-bottom:1px solid var(--border);
   display:flex;align-items:center;justify-content:space-between;
 }
-#header .logo{font-family:var(--display);font-size:15px;font-weight:900;letter-spacing:2px;
-  background:linear-gradient(135deg,var(--g1),var(--g2));
+.logo{font-size:20px;font-weight:800;letter-spacing:3px;
+  background:linear-gradient(90deg,var(--g1),var(--g2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-#header .badges{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
-.badge{padding:2px 7px;border-radius:3px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:0.5px;}
-.badge-green{background:rgba(0,255,136,0.12);border:1px solid rgba(0,255,136,0.3);color:var(--g1);}
-.badge-blue{background:rgba(0,212,255,0.12);border:1px solid rgba(0,212,255,0.3);color:var(--g2);}
-.badge-gold{background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.3);color:var(--g3);}
-.badge-red{background:rgba(255,51,85,0.12);border:1px solid rgba(255,51,85,0.3);color:var(--danger);}
-.badge-purple{background:rgba(180,79,255,0.12);border:1px solid rgba(180,79,255,0.3);color:var(--purple);}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--g2);
+  box-shadow:0 0 8px var(--g2);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.hdr-right{display:flex;align-items:center;gap:8px;}
+.badge{padding:2px 8px;border-radius:3px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1px;}
+.badge-cyan{background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);color:var(--g1);}
+.badge-green{background:rgba(0,255,157,0.1);border:1px solid rgba(0,255,157,0.3);color:var(--g2);}
+.badge-gold{background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.3);color:var(--g3);}
+.badge-red{background:rgba(255,45,85,0.1);border:1px solid rgba(255,45,85,0.3);color:var(--danger);}
 
-/* ── BOT CONTROL BAR ── */
-#controlbar{
-  padding:8px 14px;border-bottom:1px solid var(--border);
-  display:flex;gap:8px;align-items:center;flex-shrink:0;flex-wrap:wrap;
-}
-.btn{padding:7px 14px;border-radius:6px;font-family:var(--mono);font-size:10px;
-  font-weight:700;cursor:pointer;letter-spacing:1px;border:none;transition:all 0.2s;}
-.btn-primary{background:var(--g1);color:#000;}
-.btn-outline{background:transparent;border:1px solid var(--g2);color:var(--g2);}
-.btn-gold{background:transparent;border:1px solid var(--g3);color:var(--g3);}
-.btn-danger{background:transparent;border:1px solid var(--danger);color:var(--danger);}
-.btn-sm{padding:5px 10px;font-size:9px;}
-.running-dot{width:7px;height:7px;border-radius:50%;background:var(--g1);
-  animation:pulse 1.2s infinite;display:inline-block;margin-right:4px;}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.7);}}
-
-/* ── TABS ── */
-#tabs{
-  display:flex;overflow-x:auto;border-bottom:1px solid var(--border);
-  flex-shrink:0;scrollbar-width:none;
-}
+/* TABS */
+#tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
 #tabs::-webkit-scrollbar{display:none;}
-.tab{
-  padding:9px 14px;font-family:var(--mono);font-size:10px;letter-spacing:1px;
-  white-space:nowrap;cursor:pointer;border-bottom:2px solid transparent;
-  color:var(--muted);transition:all 0.2s;flex-shrink:0;
-}
+.tab{padding:9px 16px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;white-space:nowrap;
+  cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);transition:all 0.2s;flex-shrink:0;}
 .tab.active{color:var(--g1);border-bottom-color:var(--g1);}
 
-/* ── SCROLL CONTENT ── */
+/* CONTENT */
 #content{flex:1;overflow-y:auto;padding:12px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
-#content::-webkit-scrollbar{width:3px;}
+#content::-webkit-scrollbar{width:2px;}
 #content::-webkit-scrollbar-thumb{background:var(--border);}
 
-/* ── CARDS ── */
-.card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:13px;margin-bottom:10px;}
-.card-accent-green{border-color:rgba(0,255,136,0.2);}
-.card-accent-blue{border-color:rgba(0,212,255,0.2);}
-.card-accent-gold{border-color:rgba(255,215,0,0.2);}
-.card-accent-red{border-color:rgba(255,51,85,0.2);}
-.card-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px;text-transform:uppercase;}
-.card-value{font-family:var(--display);font-size:22px;font-weight:700;line-height:1;}
-.card-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+/* CARDS */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:13px;margin-bottom:10px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--g1),transparent);opacity:0.3;}
+.card-cyan{border-color:rgba(0,229,255,0.25);}
+.card-green{border-color:rgba(0,255,157,0.25);}
+.card-gold{border-color:rgba(255,204,0,0.25);}
+.card-red{border-color:rgba(255,45,85,0.25);}
+.lbl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:2px;margin-bottom:5px;text-transform:uppercase;}
+.val{font-size:24px;font-weight:800;line-height:1;}
+.sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
 
-/* ── PROGRESS BAR ── */
-.pbar-wrap{height:5px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;margin-top:6px;}
-.pbar-fill{height:100%;border-radius:3px;transition:width 0.8s ease;}
+/* SPARKLINE */
+canvas{display:block;width:100%;border-radius:4px;}
 
-/* ── SPARKLINE ── */
-canvas.spark{display:block;}
+/* PROGRESS */
+.pbar{height:4px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;margin-top:6px;}
+.pfill{height:100%;border-radius:2px;transition:width 1s ease;}
 
-/* ── ASSET CHIP ── */
-.asset-chip{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px;cursor:pointer;transition:border-color 0.2s;}
-.asset-chip:active{transform:scale(0.97);}
-.asset-name{font-family:var(--display);font-size:13px;font-weight:700;margin-bottom:2px;}
-.asset-price{font-family:var(--mono);font-size:12px;}
-.asset-change{font-family:var(--mono);font-size:10px;margin-top:2px;}
+/* BOT CARD */
+.bot-card{background:var(--bg2);border-radius:8px;padding:11px;margin-bottom:8px;
+  border:1px solid var(--border);transition:border-color 0.3s;}
+.bot-name{font-size:13px;font-weight:800;letter-spacing:2px;margin-bottom:2px;}
+.bot-status{font-family:var(--mono);font-size:9px;color:var(--muted);}
 
-/* ── TRADE ROW ── */
-.trade-row{padding:9px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;}
-.trade-coin{font-weight:700;font-size:12px;font-family:var(--mono);}
-.trade-action{font-size:10px;font-family:var(--mono);font-weight:700;}
-.trade-reason{font-size:10px;color:var(--muted);margin-top:1px;}
-.trade-val{font-family:var(--mono);font-size:11px;text-align:right;}
-.trade-pnl{font-family:var(--mono);font-size:10px;text-align:right;margin-top:1px;}
+/* TRADE ROW */
+.tr{padding:8px 0;border-bottom:1px solid rgba(0,229,255,0.06);
+  display:flex;justify-content:space-between;align-items:flex-start;}
+.tr-coin{font-size:12px;font-weight:700;letter-spacing:1px;}
+.tr-action{font-family:var(--mono);font-size:9px;font-weight:700;}
+.tr-reason{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px;}
+.tr-val{font-family:var(--mono);font-size:11px;text-align:right;}
+.tr-pnl{font-family:var(--mono);font-size:10px;text-align:right;margin-top:1px;}
 
-/* ── ROADMAP ── */
-.rm-step{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
-.rm-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-family:var(--display);font-size:11px;font-weight:700;flex-shrink:0;}
-.rm-title{font-family:var(--display);font-size:13px;font-weight:700;margin-bottom:4px;}
-.rm-body{font-size:12px;color:#8899aa;line-height:1.5;}
-.rm-tag{display:inline-block;padding:2px 7px;border-radius:3px;font-family:var(--mono);font-size:9px;margin-top:5px;margin-right:4px;}
+/* BOTTOM NAV */
+#bnav{display:flex;border-top:1px solid var(--border);flex-shrink:0;
+  background:var(--bg);padding:6px 0 max(6px,env(safe-area-inset-bottom));}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:5px;cursor:pointer;color:var(--muted);font-family:var(--mono);font-size:8px;
+  letter-spacing:0.5px;transition:color 0.2s;}
+.bn.active{color:var(--g1);}
+.bn-icon{font-size:17px;line-height:1;}
 
-/* ── PROP CHALLENGE ── */
-.challenge-bar{position:relative;height:10px;background:rgba(255,255,255,0.05);border-radius:5px;overflow:hidden;margin:6px 0;}
-.challenge-fill{height:100%;border-radius:5px;transition:width 0.8s;}
-.challenge-marker{position:absolute;top:-3px;width:2px;height:16px;background:rgba(255,255,255,0.3);}
-.rule-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);}
-.rule-name{font-size:12px;color:#aab;}
-.rule-val{font-family:var(--mono);font-size:11px;font-weight:700;}
-.rule-status{font-size:10px;font-family:var(--mono);}
+/* PULSE ANIMATION */
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,255,157,0.4)}50%{box-shadow:0 0 0 6px rgba(0,255,157,0)}}
 
-/* ── STRATEGY CARD ── */
-.strat-card{border-radius:8px;padding:11px;margin-bottom:8px;border:1px solid transparent;}
-.strat-name{font-family:var(--display);font-size:12px;font-weight:700;margin-bottom:3px;}
-.strat-desc{font-size:11px;color:#667;line-height:1.4;}
-.strat-meta{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
+/* LOADING */
+.loading{text-align:center;padding:40px 20px;color:var(--muted);font-family:var(--mono);font-size:11px;}
+.spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--g1);
+  border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── JOURNAL ── */
-.journal-entry{padding:10px;border-radius:8px;margin-bottom:8px;background:var(--bg2);border:1px solid var(--border);}
-.journal-date{font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px;}
-.journal-text{font-size:12px;line-height:1.5;color:#aab;}
-
-/* ── AI INSIGHT ── */
-.ai-box{padding:12px;border-radius:8px;background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.15);margin-bottom:10px;}
-.ai-label{font-family:var(--mono);font-size:9px;color:var(--g1);letter-spacing:1.5px;margin-bottom:6px;}
-.ai-text{font-size:13px;color:#ccd;line-height:1.6;}
-.warning-box{padding:12px;border-radius:8px;background:rgba(255,51,85,0.04);border:1px solid rgba(255,51,85,0.15);}
-.warning-label{font-family:var(--mono);font-size:9px;color:var(--danger);letter-spacing:1.5px;margin-bottom:6px;}
-
-/* ── MONTE CARLO ── */
-.mc-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);}
-.mc-label{font-size:12px;color:#889;}
-.mc-val{font-family:var(--mono);font-size:11px;font-weight:700;}
-
-/* ── BOTTOM NAV (phone) ── */
-#bottomnav{
-  display:flex;border-top:1px solid var(--border);flex-shrink:0;
-  background:var(--bg);padding:6px 0 max(6px, env(safe-area-inset-bottom));
-}
-.bnav{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px;
-  cursor:pointer;transition:color 0.2s;color:var(--muted);font-family:var(--mono);font-size:8px;letter-spacing:0.5px;}
-.bnav.active{color:var(--g1);}
-.bnav-icon{font-size:18px;line-height:1;}
-
-/* ── RING SVG ── */
-.ring-wrap{display:inline-flex;align-items:center;justify-content:center;}
+/* REPORT */
+.report-box{padding:12px;background:rgba(0,229,255,0.04);border-radius:8px;
+  border:1px solid rgba(0,229,255,0.15);font-size:12px;line-height:1.7;color:#aab;}
 </style>
 </head>
 <body>
 <div id="app">
-  <div id="header">
+  <div id="hdr">
     <div>
-      <div style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:2px;margin-bottom:2px">AUTONOMOUS SYSTEM</div>
+      <div style="font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:3px;margin-bottom:2px">LIVE TRADING SYSTEM</div>
       <div class="logo">APEX TRADER</div>
     </div>
-    <div class="badges" id="headerBadges">
-      <span class="badge badge-blue" id="regimeBadge">ANALYZING</span>
-      <span class="badge badge-green" id="phaseBadge">📄 PAPER</span>
-      <span class="badge badge-gold" id="riskBadge">RISK 100%</span>
+    <div class="hdr-right">
+      <span class="status-dot"></span>
+      <span class="badge badge-green" id="modeBadge">PAPER</span>
+      <span class="badge badge-cyan" id="lastUpdate">--:--</span>
     </div>
-  </div>
-
-  <div id="controlbar">
-    <button class="btn btn-primary" id="startBtn" onclick="toggleBot()">▶ START BOT</button>
-    <button class="btn btn-outline btn-sm" onclick="callAI()">🧠 AI ANALYZE</button>
-    <button class="btn btn-gold btn-sm" onclick="runMonteCarlo()">🎲 MONTE CARLO</button>
-    <button class="btn btn-danger btn-sm" onclick="resetBot()">↺ RESET</button>
   </div>
 
   <div id="tabs">
     <div class="tab active" onclick="switchTab('dashboard')">DASHBOARD</div>
-    <div class="tab" onclick="switchTab('assets')">ASSETS</div>
-    <div class="tab" onclick="switchTab('prop')">PROP CHALLENGE</div>
-    <div class="tab" onclick="switchTab('strategies')">STRATEGIES</div>
-    <div class="tab" onclick="switchTab('ai')">AI BRAIN</div>
-    <div class="tab" onclick="switchTab('backtest')">BACKTEST</div>
-    <div class="tab" onclick="switchTab('journal')">JOURNAL</div>
+    <div class="tab" onclick="switchTab('bots')">BOTS</div>
+    <div class="tab" onclick="switchTab('trades')">TRADES</div>
+    <div class="tab" onclick="switchTab('report')">REPORT</div>
     <div class="tab" onclick="switchTab('roadmap')">ROADMAP</div>
   </div>
 
   <div id="content"></div>
 
-  <div id="bottomnav">
-    <div class="bnav active" onclick="switchTab('dashboard')"><div class="bnav-icon">📊</div>DASH</div>
-    <div class="bnav" onclick="switchTab('assets')"><div class="bnav-icon">💹</div>ASSETS</div>
-    <div class="bnav" onclick="switchTab('prop')"><div class="bnav-icon">🎯</div>PROP</div>
-    <div class="bnav" onclick="switchTab('ai')"><div class="bnav-icon">🧠</div>AI</div>
-    <div class="bnav" onclick="switchTab('roadmap')"><div class="bnav-icon">🗺</div>ROADMAP</div>
+  <div id="bnav">
+    <div class="bn active" onclick="switchTab('dashboard')"><div class="bn-icon">📊</div>DASH</div>
+    <div class="bn" onclick="switchTab('bots')"><div class="bn-icon">🤖</div>BOTS</div>
+    <div class="bn" onclick="switchTab('trades')"><div class="bn-icon">💹</div>TRADES</div>
+    <div class="bn" onclick="switchTab('report')"><div class="bn-icon">🧠</div>AI</div>
+    <div class="bn" onclick="switchTab('roadmap')"><div class="bn-icon">🗺</div>MAP</div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════════
-// CONSTANTS
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// CONFIG — Your Supabase credentials
+// ═══════════════════════════════════════════════
+const SUPABASE_URL = "https://npuqacqhodsharmhrtce.supabase.co";
+const SUPABASE_KEY = "sb_publishable_ZXbzIWVZgTIGydS79NrYoQ_MvxvX-LI"; // Replace with your sb_publishable_ key
+
+const BOT_IDS = ["BOT1_MOMENTUM","BOT2_MEAN_REV","BOT3_TREND"];
+const BOT_NAMES = {BOT1_MOMENTUM:"MOMENTUM",BOT2_MEAN_REV:"MEAN REV",BOT3_TREND:"TREND"};
+const BOT_COLORS = {BOT1_MOMENTUM:"#00e5ff",BOT2_MEAN_REV:"#00ff9d",BOT3_TREND:"#ffcc00"};
 const STARTING = 200;
 const GOAL = 25000;
-const ASSETS = [
-  {id:"BTC",name:"Bitcoin",  base:67000, vol:0.018,sector:"Store of Value",color:"#f7931a"},
-  {id:"ETH",name:"Ethereum", base:3400,  vol:0.022,sector:"Smart Contract",color:"#627eea"},
-  {id:"SOL",name:"Solana",   base:145,   vol:0.028,sector:"Smart Contract",color:"#9945ff"},
-  {id:"BNB",name:"BNB",      base:580,   vol:0.020,sector:"Exchange",      color:"#f3ba2f"},
-  {id:"AVAX",name:"Avalanche",base:38,   vol:0.032,sector:"Layer 1",       color:"#e84142"},
-  {id:"LINK",name:"Chainlink",base:17,   vol:0.030,sector:"Oracle",        color:"#2a5ada"},
-  {id:"ADA", name:"Cardano", base:0.48,  vol:0.025,sector:"Smart Contract",color:"#0099cc"},
-  {id:"MATIC",name:"Polygon",base:0.92,  vol:0.029,sector:"Layer 2",       color:"#8247e5"},
-];
-const STRATS = ["MOMENTUM","MEAN_REV","TREND","BREAKOUT","SENTIMENT","MACRO"];
-const STRAT_COLORS = {MOMENTUM:"#00ff88",MEAN_REV:"#00d4ff",TREND:"#ffd700",BREAKOUT:"#ff6b35",SENTIMENT:"#e040fb",MACRO:"#ff3355"};
-const TRADERS = [
-  {name:"Jim Simons",style:"Statistical arbitrage + pattern recognition in uncorrelated data"},
-  {name:"Ray Dalio",style:"All-weather risk parity — diversify across uncorrelated return streams"},
-  {name:"Paul Tudor Jones",style:"Macro trend following — size up on conviction, cut losers fast"},
-  {name:"Peter Lynch",style:"Understand what you own — growth with discipline, ride winners"},
-  {name:"George Soros",style:"Reflexivity — identify when market narrative diverges from reality"},
-];
-// PROP FIRM RULES (FTMO standard)
-const PROP = {target:0.10, dailyLimit:0.05, maxDrawdown:0.10, minDays:4, phase2target:0.05};
 
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // STATE
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 let state = {
-  running:false, tick:0, activeTab:"dashboard",
-  balance:STARTING, holdings:{}, costBasis:{}, entryStrat:{},
-  totalValue:STARTING, peakValue:STARTING,
-  equityCurve:[STARTING], winCount:0, lossCount:0,
-  trades:[], phase:"PAPER",
-  riskLevel:1.0, riskReason:"Normal conditions",
-  stratWeights:Object.fromEntries(STRATS.map(s=>[s,1.0])),
-  stratPnL:Object.fromEntries(STRATS.map(s=>[s,0])),
-  regime:"ANALYZING", aiInsight:null, aiLoading:false,
-  journalEntries:[], mcResults:null,
-  prices:Object.fromEntries(ASSETS.map(a=>[a.id,[a.base]])),
-  // PROP CHALLENGE state
-  propStartBalance:STARTING, propDayStart:STARTING, propDailyLoss:0,
-  propTradingDays:0, propLastDay:-1, propPhase:1, propPassed:false,
-  propFailed:false, propFailReason:"",
-  // BACKTEST state
-  backtestRunning:false, backtestResults:null,
-  // Sharpe tracking
-  dailyReturns:[], lastDayValue:STARTING,
+  activeTab:"dashboard",
+  trades:[],
+  equity:{},
+  stats:{},
+  weights:{},
+  report:null,
+  loading:true,
+  lastFetch:null,
 };
-let botInterval = null;
 
-// ═══════════════════════════════════════════════════════════════════
-// MATH
-// ═══════════════════════════════════════════════════════════════════
-function calcRSI(p,n=14){
-  if(p.length<n+1)return 50;
-  let g=0,l=0;
-  for(let i=p.length-n;i<p.length;i++){const d=p[i]-p[i-1];d>0?g+=d:l-=d;}
-  const ag=g/n,al=l/n;return al===0?100:100-100/(1+ag/al);
-}
-function calcEMA(p,n){
-  if(p.length<n)return p[p.length-1];
-  const k=2/(n+1);let e=p.slice(0,n).reduce((a,b)=>a+b,0)/n;
-  for(let i=n;i<p.length;i++)e=p[i]*k+e*(1-k);return e;
-}
-function calcATR(p,n=14){
-  if(p.length<n+1)return p[p.length-1]*0.02;
-  let s=0;for(let i=p.length-n;i<p.length;i++)s+=Math.abs(p[i]-p[i-1]);return s/n;
-}
-function calcBB(p,n=20){
-  if(p.length<n){const c=p[p.length-1];return{upper:c*1.02,lower:c*0.98,mid:c};}
-  const sl=p.slice(-n),mid=sl.reduce((a,b)=>a+b,0)/n;
-  const std=Math.sqrt(sl.reduce((a,b)=>a+(b-mid)**2,0)/n);
-  return{upper:mid+2*std,lower:mid-2*std,mid};
-}
-function calcMACD(p){
-  if(p.length<26)return{hist:0};
-  return{hist:calcEMA(p,12)-calcEMA(p,26)};
-}
-function calcVol(p,n=20){
-  if(p.length<n+1)return 0.02;
-  const r=[];for(let i=p.length-n;i<p.length;i++)r.push((p[i]-p[i-1])/p[i-1]);
-  const m=r.reduce((a,b)=>a+b,0)/r.length;
-  return Math.sqrt(r.reduce((a,b)=>a+(b-m)**2,0)/r.length);
-}
-function calcSharpe(returns){
-  if(returns.length<5)return 0;
-  const m=returns.reduce((a,b)=>a+b,0)/returns.length;
-  const std=Math.sqrt(returns.reduce((a,b)=>a+(b-m)**2,0)/returns.length);
-  return std===0?0:(m/std)*Math.sqrt(252);
-}
-function calcSortino(returns){
-  if(returns.length<5)return 0;
-  const m=returns.reduce((a,b)=>a+b,0)/returns.length;
-  const neg=returns.filter(r=>r<0);
-  if(neg.length===0)return m>0?5:0;
-  const ds=Math.sqrt(neg.reduce((a,b)=>a+b**2,0)/neg.length);
-  return ds===0?0:(m/ds)*Math.sqrt(252);
-}
-function correl(a,b,n=20){
-  const la=a.slice(-n),lb=b.slice(-n);
-  if(la.length<n)return 0;
-  const ma=la.reduce((x,y)=>x+y,0)/n,mb=lb.reduce((x,y)=>x+y,0)/n;
-  const num=la.reduce((s,v,i)=>s+(v-ma)*(lb[i]-mb),0);
-  const den=Math.sqrt(la.reduce((s,v)=>s+(v-ma)**2,0)*lb.reduce((s,v)=>s+(v-mb)**2,0));
-  return den===0?0:num/den;
-}
-function kelly(wr,avgW,avgL){
-  if(avgL===0)return 0.05;
-  const b=avgW/avgL,p=wr/100,q=1-p;
-  return Math.max(0.01,Math.min((b*p-q)/b*0.5,0.20));
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// PRICE ENGINE
-// ═══════════════════════════════════════════════════════════════════
-function nextPrice(last,vol,tick,seed){
-  const regime=Math.sin(tick/180+seed)>0.65?"TREND":Math.sin(tick/70+seed*2)>0.72?"VOLATILE":"NORMAL";
-  const vm=regime==="VOLATILE"?2.2:regime==="TREND"?0.65:1.0;
-  const bias=regime==="TREND"?(Math.sin(tick/120+seed)>0?0.0025:-0.0025):0;
-  const move=(Math.random()-0.482)*vol*vm+bias;
-  return Math.max(last*(1+move),last*0.82);
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// STRATEGY SIGNALS
-// ═══════════════════════════════════════════════════════════════════
-function sigMomentum(p){
-  if(p.length<20)return 0;
-  const rsi=calcRSI(p),macd=calcMACD(p).hist;
-  const e9=calcEMA(p,9),e21=calcEMA(p,21),e50=calcEMA(p,Math.min(50,p.length));
-  let s=0;
-  if(rsi<30)s+=2;else if(rsi<40)s+=1;else if(rsi>70)s-=2;else if(rsi>60)s-=1;
-  if(macd>0)s+=0.8;else s-=0.8;
-  if(e9>e21&&e21>e50)s+=1.5;else if(e9<e21&&e21<e50)s-=1.5;
-  return Math.max(-1,Math.min(1,s/5));
-}
-function sigMeanRev(p){
-  if(p.length<20)return 0;
-  const bb=calcBB(p),cur=p[p.length-1];
-  let s=0;
-  if(cur<bb.lower)s+=2;else if(cur>bb.upper)s-=2;
-  const z=(cur-bb.mid)/(bb.upper-bb.mid+0.001)*2;
-  return Math.max(-1,Math.min(1,(s-z)/3));
-}
-function sigTrend(p){
-  if(p.length<30)return 0;
-  const e20=calcEMA(p,20),e50=calcEMA(p,Math.min(50,p.length)),cur=p[p.length-1];
-  const slope=(p[p.length-1]-p[p.length-8])/p[p.length-8];
-  let s=0;
-  if(cur>e20&&e20>e50)s+=2;else if(cur<e20&&e20<e50)s-=2;
-  s+=slope*8;return Math.max(-1,Math.min(1,s/3));
-}
-function sigBreakout(p){
-  if(p.length<15)return 0;
-  const rec=p.slice(-15),high=Math.max(...rec.slice(0,-1)),low=Math.min(...rec.slice(0,-1));
-  const cur=p[p.length-1],atr=calcATR(p);
-  if(cur>high+atr*0.4)return 0.85;if(cur<low-atr*0.4)return -0.85;return 0;
-}
-function sigSentiment(p,tick){
-  if(p.length<8)return 0;
-  const chg=(p[p.length-1]-p[p.length-5])/p[p.length-5];
-  return Math.max(-1,Math.min(1,Math.sin(tick/41)*0.25+chg*7));
-}
-function sigMacro(p,tick){
-  // Simulates macro regime — Fed cycle, dollar, risk-on/off
-  const macro=Math.sin(tick/300)*0.4+Math.sin(tick/80)*0.2;
-  const vol=calcVol(p);
-  return Math.max(-1,Math.min(1,macro*(vol<0.02?1.2:0.6)));
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// RISK ENGINE
-// ═══════════════════════════════════════════════════════════════════
-function calcRisk(total,peak,trades,curve){
-  let r=1.0;
-  const dd=peak>0?(peak-total)/peak:0;
-  if(dd>0.20)r*=0.25;else if(dd>0.12)r*=0.45;else if(dd>0.06)r*=0.70;
-  // Prop challenge protection — never exceed daily limit
-  const propDD=(state.propDayStart-total)/state.propStartBalance;
-  if(propDD>0.04)r*=0.3; // near daily limit → almost stop
-  if(propDD>0.045)r=0;   // at limit → full stop
-  const propTotal=(peak-total)/state.propStartBalance;
-  if(propTotal>0.09)r=0; // near max drawdown → stop all trading
-  // Streak
-  const recent=trades.filter(t=>t.action==="SELL").slice(0,6);
-  if(recent.length>=4){const w=recent.filter(t=>(t.profit||0)>0).length;if(w>=4)r*=1.15;else if(w<=1)r*=0.65;}
-  // Growth protect
-  const gr=total/STARTING;
-  if(gr>80)r*=0.4;else if(gr>40)r*=0.55;else if(gr>20)r*=0.70;
-  // Curve momentum
-  if(curve.length>=15){const sl=(curve[curve.length-1]-curve[curve.length-15])/curve[curve.length-15];if(sl>0.04)r*=1.1;else if(sl<-0.04)r*=0.8;}
-  return Math.max(0,Math.min(1.5,r));
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// PROP CHALLENGE TRACKER
-// ═══════════════════════════════════════════════════════════════════
-function updatePropChallenge(total){
-  const day=Math.floor(state.tick/20);
-  if(day!==state.propLastDay){
-    state.dailyReturns.push((total-state.lastDayValue)/state.lastDayValue);
-    state.lastDayValue=total;
-    state.propDayStart=total;
-    state.propTradingDays++;
-    state.propLastDay=day;
-  }
-  state.propDailyLoss=(state.propDayStart-total)/state.propStartBalance;
-  const totalPnL=(total-state.propStartBalance)/state.propStartBalance;
-  const maxDD=(state.propStartBalance-total)/state.propStartBalance;
-  // Check fail conditions
-  if(state.propDailyLoss>PROP.dailyLimit&&!state.propFailed){
-    state.propFailed=true;state.propFailReason="Daily loss limit exceeded (5%)";state.running=false;
-    addJournal(`❌ PROP CHALLENGE FAILED: ${state.propFailReason}. Reset and improve risk management.`,"fail");
-  }
-  if(maxDD>PROP.maxDrawdown&&!state.propFailed){
-    state.propFailed=true;state.propFailReason="Max drawdown exceeded (10%)";state.running=false;
-    addJournal(`❌ PROP CHALLENGE FAILED: ${state.propFailReason}. Tighten position sizes.`,"fail");
-  }
-  // Check pass
-  const target=state.propPhase===1?PROP.target:PROP.phase2target;
-  if(totalPnL>=target&&state.propTradingDays>=PROP.minDays&&!state.propPassed&&!state.propFailed){
-    if(state.propPhase===1){
-      state.propPhase=2;state.propStartBalance=total;
-      addJournal(`✅ PROP PHASE 1 PASSED! Target hit: +${(totalPnL*100).toFixed(1)}%. Moving to Phase 2 (5% target).`,"win");
-    } else {
-      state.propPassed=true;
-      addJournal(`🏆 PROP CHALLENGE FULLY PASSED! Both phases complete. Ready to apply to FTMO/Apex for real funded account!`,"win");
+// ═══════════════════════════════════════════════
+// SUPABASE FETCH
+// ═══════════════════════════════════════════════
+async function sbFetch(table, params="") {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, {
+    headers:{
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json"
     }
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// JOURNAL
-// ═══════════════════════════════════════════════════════════════════
-function addJournal(text,type="info"){
-  state.journalEntries.unshift({text,type,time:new Date().toLocaleString(),tick:state.tick});
-  if(state.journalEntries.length>50)state.journalEntries.pop();
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// MAIN TICK
-// ═══════════════════════════════════════════════════════════════════
-function tick(){
-  state.tick++;
-  const s=state;
-  // Update prices
-  for(const a of ASSETS){
-    const h=s.prices[a.id];
-    s.prices[a.id]=[...h.slice(-299),nextPrice(h[h.length-1],a.vol,s.tick,ASSETS.indexOf(a))];
-  }
-  // Compute total
-  let total=s.balance;
-  for(const a of ASSETS)total+=(s.holdings[a.id]||0)*s.prices[a.id][s.prices[a.id].length-1];
-  // Risk
-  s.riskLevel=calcRisk(total,s.peakValue,s.trades,s.equityCurve);
-  if(s.riskLevel===0){s.riskReason="🔴 PROP LIMIT REACHED — Trading halted";renderContent();return;}
-  else if(s.riskLevel<0.3)s.riskReason="🔴 Severe protection — drawdown guard";
-  else if(s.riskLevel<0.6)s.riskReason="🟠 Defensive mode";
-  else if(s.riskLevel<0.85)s.riskReason="🟡 Cautious";
-  else if(s.riskLevel>1.2)s.riskReason="🟢 Elevated confidence";
-  else s.riskReason="🟢 Normal conditions";
-  // Correl penalty
-  const corrPen={};
-  for(const a of ASSETS){
-    let pen=0;
-    for(const b of ASSETS){
-      if(a.id!==b.id&&(s.holdings[b.id]||0)>0)
-        pen+=Math.max(0,correl(s.prices[a.id],s.prices[b.id]))*0.25;
-    }
-    corrPen[a.id]=pen;
-  }
-  // Signals & trades
-  const newTrades=[];
-  for(const a of ASSETS){
-    const p=s.prices[a.id],cur=p[p.length-1];
-    const held=s.holdings[a.id]||0;
-    let tv=s.balance;for(const x of ASSETS)tv+=(s.holdings[x.id]||0)*s.prices[x.id][s.prices[x.id].length-1];
-    const sigs={
-      MOMENTUM:sigMomentum(p)*(s.stratWeights.MOMENTUM||1),
-      MEAN_REV:sigMeanRev(p)*(s.stratWeights.MEAN_REV||1),
-      TREND:sigTrend(p)*(s.stratWeights.TREND||1),
-      BREAKOUT:sigBreakout(p)*(s.stratWeights.BREAKOUT||1),
-      SENTIMENT:sigSentiment(p,s.tick)*(s.stratWeights.SENTIMENT||1),
-      MACRO:sigMacro(p,s.tick)*(s.stratWeights.MACRO||1),
-    };
-    const comp=Object.values(sigs).reduce((a,b)=>a+b,0)/STRATS.length;
-    const dom=Object.entries(sigs).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]))[0][0];
-    const posRatio=(held*cur)/Math.max(tv,1);
-    // Kelly sizing
-    const tt=s.winCount+s.lossCount;
-    const wr=tt>5?(s.winCount/tt)*100:52;
-    const sz=kelly(wr,0.07,0.032)*s.riskLevel*(1-corrPen[a.id]);
-    // ATR stop
-    const atr=calcATR(p);
-    const stopHit=held>0&&cur<(s.costBasis[a.id]||cur)-atr*2.5;
-    // BUY
-    if(comp>0.32&&held===0&&s.balance>10&&posRatio<0.28&&s.riskLevel>0.1){
-      const spend=Math.min(s.balance*sz,s.balance*0.28,s.balance-4);
-      if(spend>5){
-        const qty=spend/cur;
-        s.holdings[a.id]=qty;s.balance-=spend;
-        s.costBasis[a.id]=cur;s.entryStrat[a.id]=dom;
-        newTrades.push({id:Date.now()+Math.random(),coin:a.id,action:"BUY",price:cur,qty,value:spend,strategy:dom,reason:`${dom} composite:${comp.toFixed(2)}`,time:new Date().toLocaleTimeString()});
-      }
-    }
-    // SELL
-    else if(held>0&&(comp<-0.28||stopHit)&&s.riskLevel>0){
-      const value=held*cur,basis=s.costBasis[a.id]||cur,profit=value-(held*basis);
-      const es=s.entryStrat[a.id]||"MOMENTUM";
-      s.balance+=value;s.holdings[a.id]=0;delete s.costBasis[a.id];delete s.entryStrat[a.id];
-      profit>0?s.winCount++:s.lossCount++;
-      s.stratPnL[es]=(s.stratPnL[es]||0)+profit;
-      newTrades.push({id:Date.now()+Math.random(),coin:a.id,action:"SELL",price:cur,qty:held,value,profit,strategy:es,reason:stopHit?"⛔ ATR stop-loss":`${dom} reversal`,time:new Date().toLocaleTimeString()});
-    }
-  }
-  // Recompute total
-  let finalTotal=s.balance;
-  for(const a of ASSETS)finalTotal+=(s.holdings[a.id]||0)*s.prices[a.id][s.prices[a.id].length-1];
-  // Update strategy weights
-  for(const st of STRATS){
-    if(s.stratPnL[st]>0)s.stratWeights[st]=Math.min(2.0,(s.stratWeights[st]||1)*1.008);
-    else if(s.stratPnL[st]<0)s.stratWeights[st]=Math.max(0.2,(s.stratWeights[st]||1)*0.993);
-  }
-  s.totalValue=finalTotal;s.peakValue=Math.max(s.peakValue,finalTotal);
-  s.equityCurve=[...s.equityCurve.slice(-499),finalTotal];
-  if(newTrades.length)s.trades=[...newTrades,...s.trades].slice(0,100);
-  // Prop challenge tracking
-  updatePropChallenge(finalTotal);
-  // Goal check
-  if(finalTotal>=GOAL&&s.phase==="PAPER"){
-    s.phase="READY";
-    addJournal("🎯 PAPER GOAL $25,000 REACHED! Strategy proven. Time to go live.","win");
-  }
-  // Weekly journal (every 200 ticks)
-  if(s.tick%200===0){
-    const wr=s.winCount+s.lossCount>0?(s.winCount/(s.winCount+s.lossCount)*100).toFixed(0):0;
-    const sharpe=calcSharpe(s.dailyReturns).toFixed(2);
-    addJournal(`📊 Weekly Review — Tick ${s.tick}: Portfolio $${finalTotal.toFixed(2)}, Win rate ${wr}%, Sharpe ${sharpe}`,"info");
-  }
-  // AI every 40 ticks
-  if(s.tick%40===0&&!s.aiLoading)callAI();
-  renderContent();
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// MONTE CARLO
-// ═══════════════════════════════════════════════════════════════════
-function runMonteCarlo(){
-  const wr=(state.winCount+state.lossCount)>10?state.winCount/(state.winCount+state.lossCount):0.52;
-  const avgWin=0.065,avgLoss=0.033,sims=5000,days=180;
-  let results=[];
-  for(let s=0;s<sims;s++){
-    let bal=state.totalValue;
-    for(let d=0;d<days;d++){
-      const trades=Math.floor(Math.random()*6)+2;
-      for(let t=0;t<trades;t++){
-        const won=Math.random()<wr;
-        const size=bal*kelly(wr*100,avgWin,avgLoss);
-        bal+=won?size*avgWin:-size*avgLoss;
-        if(bal<STARTING*0.1)break;
-      }
-    }
-    results.push(bal);
-  }
-  results.sort((a,b)=>a-b);
-  state.mcResults={
-    worst:results[Math.floor(sims*0.05)],
-    p25:results[Math.floor(sims*0.25)],
-    median:results[Math.floor(sims*0.50)],
-    p75:results[Math.floor(sims*0.75)],
-    best:results[Math.floor(sims*0.95)],
-    pctGoal:results.filter(r=>r>=GOAL).length/sims*100,
-    pctSurvive:results.filter(r=>r>=STARTING).length/sims*100,
-    sims
-  };
-  addJournal(`🎲 Monte Carlo complete: ${state.mcResults.pctGoal.toFixed(1)}% chance of hitting $25K in 180 days based on current performance.`,"info");
-  renderContent();
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// BACKTEST (simulated historical)
-// ═══════════════════════════════════════════════════════════════════
-function runBacktest(){
-  addJournal("⏳ Running 6-month backtest simulation...","info");
-  setTimeout(()=>{
-    const runs=[];
-    for(let r=0;r<10;r++){
-      let bal=STARTING,wins=0,losses=0,peak=STARTING,maxDD=0;
-      const prices={};for(const a of ASSETS)prices[a.id]=[a.base];
-      for(let t=0;t<4320;t++){
-        for(const a of ASSETS){
-          const h=prices[a.id];
-          prices[a.id]=[...h.slice(-99),nextPrice(h[h.length-1],a.vol,t,ASSETS.indexOf(a)+r*13)];
-        }
-        let tv=bal;for(const a of ASSETS)tv+=0;
-        if(Math.random()<0.08){
-          const won=Math.random()<0.53;
-          const size=Math.min(bal*0.08,bal-2);
-          if(size>2){bal+=won?size*0.065:-size*0.033;won?wins++:losses++;}
-        }
-        peak=Math.max(peak,bal);maxDD=Math.max(maxDD,(peak-bal)/peak);
-      }
-      runs.push({finalBal:bal,wins,losses,maxDD,wr:wins/(wins+losses+0.001)});
-    }
-    const avg=runs.reduce((a,b)=>a+b.finalBal,0)/runs.length;
-    const avgDD=runs.reduce((a,b)=>a+b.maxDD,0)/runs.length;
-    const avgWR=runs.reduce((a,b)=>a+b.wr,0)/runs.length;
-    state.backtestResults={avg,avgDD,avgWR,runs,best:Math.max(...runs.map(r=>r.finalBal)),worst:Math.min(...runs.map(r=>r.finalBal))};
-    addJournal(`✅ Backtest done: Avg $${avg.toFixed(0)} over 6 months, ${(avgWR*100).toFixed(0)}% win rate, ${(avgDD*100).toFixed(1)}% max drawdown.`,"info");
-    renderContent();
-  },100);
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// CLAUDE AI BRAIN
-// ═══════════════════════════════════════════════════════════════════
-async function callAI(){
-  if(state.aiLoading)return;
-  state.aiLoading=true;renderContent();
-  const trader=TRADERS[state.tick%TRADERS.length];
-  const portfolio=`Total: $${state.totalValue.toFixed(2)}, Cash: $${state.balance.toFixed(2)}, Phase: ${state.phase}, Tick: ${state.tick}`;
-  const mktSnap=ASSETS.map(a=>{
-    const p=state.prices[a.id];const cur=p[p.length-1];
-    return `${a.id}: $${cur.toFixed(2)}, RSI ${calcRSI(p).toFixed(0)}, Vol ${(calcVol(p)*100).toFixed(1)}%`;
-  }).join("; ");
-  const swStr=STRATS.map(s=>`${s}:${(state.stratWeights[s]*100).toFixed(0)}%`).join(", ");
-  const prompt=`You are the AI brain of an autonomous crypto trading bot managing a paper portfolio from $200 toward $25,000.
-
-PORTFOLIO: ${portfolio}
-MARKET: ${mktSnap}
-STRATEGY WEIGHTS: ${swStr}
-WIN RATE: ${state.winCount+state.lossCount>0?(state.winCount/(state.winCount+state.lossCount)*100).toFixed(0):0}%
-TRADER PHILOSOPHY: Channel ${trader.name} — ${trader.style}
-
-Respond ONLY with valid compact JSON (no markdown):
-{"regime":"BULL|BEAR|SIDEWAYS|VOLATILE","topAsset":"BTC|ETH|SOL|BNB|AVAX|LINK|ADA|MATIC","riskAdj":0.5-1.5,"stratFocus":"MOMENTUM|MEAN_REV|TREND|BREAKOUT|SENTIMENT|MACRO","insight":"max 20 words applying ${trader.name} philosophy","warning":"max 12 words or null","traderName":"${trader.name}"}`;
-  try{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:250,messages:[{role:"user",content:prompt}]})});
-    const d=await r.json();
-    const txt=d.content?.map(c=>c.text||"").join("").replace(/```json|```/g,"").trim();
-    state.aiInsight=JSON.parse(txt);
-    state.regime=state.aiInsight.regime||"SIDEWAYS";
-    if(state.aiInsight.stratFocus){
-      state.stratWeights[state.aiInsight.stratFocus]=Math.min(2.0,(state.stratWeights[state.aiInsight.stratFocus]||1)*1.25);
-    }
-  }catch(e){
-    state.aiInsight={regime:"SIDEWAYS",topAsset:"BTC",riskAdj:1.0,stratFocus:"MOMENTUM",insight:"Preserve capital. Quality over quantity in setups.",warning:"AI unavailable — check connection",traderName:trader.name};
-  }
-  state.aiLoading=false;renderContent();
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// SPARKLINE CANVAS
-// ═══════════════════════════════════════════════════════════════════
-function drawSpark(canvasId,prices,upColor="#00ff88",downColor="#ff3355"){
-  const c=document.getElementById(canvasId);if(!c)return;
-  const ctx=c.getContext("2d"),W=c.width,H=c.height;
-  ctx.clearRect(0,0,W,H);
-  if(prices.length<2)return;
-  const mn=Math.min(...prices),mx=Math.max(...prices),rng=mx-mn||1;
-  const up=prices[prices.length-1]>=prices[0];
-  ctx.strokeStyle=up?upColor:downColor;
-  ctx.lineWidth=1.5;ctx.lineJoin="round";
-  ctx.beginPath();
-  prices.forEach((p,i)=>{
-    const x=(i/(prices.length-1))*W,y=H-((p-mn)/rng)*(H-2)-1;
-    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
   });
-  ctx.stroke();
-}
-function drawAllSparks(){
-  ASSETS.forEach(a=>drawSpark(`spark-${a.id}`,state.prices[a.id].slice(-80),a.color,a.color));
-  drawSpark("spark-equity",state.equityCurve.slice(-200));
+  if (!r.ok) throw new Error(`${table}: ${r.status}`);
+  return r.json();
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// FORMATTING HELPERS
-// ═══════════════════════════════════════════════════════════════════
-function fmtPrice(p,id){
-  return p<1?`$${p.toFixed(4)}`:p<10?`$${p.toFixed(2)}`:p<1000?`$${p.toFixed(1)}`:p<100000?`$${(p/1000).toFixed(1)}K`:`$${(p/1000).toFixed(0)}K`;
-}
-function fmtUSD(n){return n>=0?`$${n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}`:`-$${Math.abs(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}`;}
-function pct(n){return `${n>=0?"+":""}${n.toFixed(2)}%`;}
-function ring(val,max,color,size=60,label,sub){
-  const p=Math.min(val/max,1),r=(size-7)/2,c=2*Math.PI*r;
-  return `<svg width="${size}" height="${size}"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="5"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="5" stroke-dasharray="${p*c} ${c}" stroke-linecap="round" transform="rotate(-90 ${size/2} ${size/2})" style="transition:stroke-dasharray 0.8s"/><text x="${size/2}" y="${size/2-3}" text-anchor="middle" dominant-baseline="middle" style="fill:#fff;font-size:9px;font-family:var(--mono);font-weight:700">${label}</text>${sub?`<text x="${size/2}" y="${size/2}+8" text-anchor="middle" dominant-baseline="middle" style="fill:var(--muted);font-size:7px;font-family:var(--mono)">${sub}</text>`:""}</svg>`;
+async function loadData() {
+  try {
+    // Trades
+    const trades = await sbFetch("trades", "order=timestamp.desc&limit=100");
+    state.trades = trades || [];
+
+    // Equity history per bot
+    for (const bot of BOT_IDS) {
+      const eq = await sbFetch("equity_history",
+        `bot_id=eq.${bot}&order=timestamp.desc&limit=100`);
+      state.equity[bot] = (eq || []).reverse();
+    }
+
+    // Bot stats
+    for (const bot of BOT_IDS) {
+      const s = await sbFetch("bot_stats", `bot_id=eq.${bot}`);
+      state.stats[bot] = s && s[0] ? s[0] : {wins:0,losses:0,peak_equity:STARTING};
+    }
+
+    // Strategy weights
+    for (const bot of BOT_IDS) {
+      const w = await sbFetch("strategy_weights", `bot_id=eq.${bot}`);
+      state.weights[bot] = w && w[0] ? w[0].weights : {};
+    }
+
+    // Latest report
+    const reports = await sbFetch("reports", "order=timestamp.desc&limit=1");
+    state.report = reports && reports[0] ? reports[0] : null;
+
+    state.loading = false;
+    state.lastFetch = new Date();
+    document.getElementById("lastUpdate").textContent =
+      state.lastFetch.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+    render();
+  } catch(e) {
+    console.error("Load error:", e);
+    state.loading = false;
+    state.error = e.message;
+    render();
+  }
 }
 
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+function fmtUSD(n) {
+  const abs = Math.abs(n);
+  const s = abs >= 1000 ? `$${(abs/1000).toFixed(2)}K` :
+            `$${abs.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+  return n < 0 ? `-${s}` : s;
+}
+function pct(n) { return `${n>=0?"+":""}${n.toFixed(2)}%`; }
+
+function totalEquity() {
+  let total = 0;
+  for (const bot of BOT_IDS) {
+    const eq = state.equity[bot];
+    if (eq && eq.length > 0) total += eq[eq.length-1].equity;
+  }
+  return total || STARTING * BOT_IDS.length;
+}
+
+function combinedCurve() {
+  // Get max length
+  const maxLen = Math.max(...BOT_IDS.map(b => (state.equity[b]||[]).length));
+  if (maxLen === 0) return [STARTING * BOT_IDS.length];
+  const combined = [];
+  for (let i = 0; i < maxLen; i++) {
+    let sum = 0;
+    for (const bot of BOT_IDS) {
+      const eq = state.equity[bot] || [];
+      const idx = Math.round(i * (eq.length-1) / (maxLen-1));
+      sum += eq[idx] ? eq[idx].equity : STARTING;
+    }
+    combined.push(sum);
+  }
+  return combined;
+}
+
+function drawSpark(id, data, upColor="#00e5ff") {
+  setTimeout(() => {
+    const c = document.getElementById(id);
+    if (!c || data.length < 2) return;
+    const W = c.offsetWidth || 300, H = c.height || 48;
+    c.width = W;
+    const ctx = c.getContext("2d");
+    ctx.clearRect(0,0,W,H);
+    const mn = Math.min(...data), mx = Math.max(...data), rng = mx-mn||1;
+    const up = data[data.length-1] >= data[0];
+    const color = up ? upColor : "#ff2d55";
+    // gradient fill
+    const grad = ctx.createLinearGradient(0,0,0,H);
+    grad.addColorStop(0, color + "33");
+    grad.addColorStop(1, color + "00");
+    ctx.beginPath();
+    data.forEach((p,i) => {
+      const x = (i/(data.length-1))*W;
+      const y = H - ((p-mn)/rng)*(H-4) - 2;
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    });
+    ctx.lineTo(W, H); ctx.lineTo(0, H);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+    // line
+    ctx.beginPath();
+    data.forEach((p,i) => {
+      const x = (i/(data.length-1))*W;
+      const y = H - ((p-mn)/rng)*(H-4) - 2;
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    });
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.lineJoin = "round";
+    ctx.stroke();
+  }, 60);
+}
+
+// ═══════════════════════════════════════════════
 // RENDER
-// ═══════════════════════════════════════════════════════════════════
-function renderContent(){
-  updateHeader();
-  const c=document.getElementById("content");
-  // Update bottom nav
-  document.querySelectorAll(".bnav").forEach(b=>b.classList.remove("active"));
-  const bnMap={dashboard:0,assets:1,prop:2,ai:3,roadmap:4};
-  if(bnMap[state.activeTab]!==undefined)document.querySelectorAll(".bnav")[bnMap[state.activeTab]]?.classList.add("active");
-  // Tabs highlight
-  document.querySelectorAll(".tab").forEach((t,i)=>{
-    const tNames=["dashboard","assets","prop","strategies","ai","backtest","journal","roadmap"];
-    t.classList.toggle("active",tNames[i]===state.activeTab);
-  });
-  switch(state.activeTab){
-    case"dashboard":c.innerHTML=renderDashboard();break;
-    case"assets":c.innerHTML=renderAssets();break;
-    case"prop":c.innerHTML=renderProp();break;
-    case"strategies":c.innerHTML=renderStrategies();break;
-    case"ai":c.innerHTML=renderAI();break;
-    case"backtest":c.innerHTML=renderBacktest();break;
-    case"journal":c.innerHTML=renderJournal();break;
-    case"roadmap":c.innerHTML=renderRoadmap();break;
+// ═══════════════════════════════════════════════
+function render() {
+  updateNav();
+  const c = document.getElementById("content");
+  if (state.loading) {
+    c.innerHTML = `<div class="loading"><div class="spinner"></div>Loading live data from Supabase...</div>`;
+    return;
   }
-  setTimeout(drawAllSparks,50);
-}
-function updateHeader(){
-  const rc=document.getElementById("regimeBadge");
-  const rColors={BULL:"badge-green",BEAR:"badge-red",SIDEWAYS:"badge-blue",VOLATILE:"badge-gold",ANALYZING:"badge-blue"};
-  rc.className=`badge ${rColors[state.regime]||"badge-blue"}`;rc.textContent=state.regime;
-  const pc=document.getElementById("phaseBadge");
-  pc.className=`badge ${state.phase==="LIVE"?"badge-green":state.phase==="READY"?"badge-gold":"badge-blue"}`;
-  pc.textContent=state.phase==="PAPER"?"📄 PAPER":state.phase==="READY"?"🎯 GOAL!":"💰 LIVE";
-  document.getElementById("riskBadge").textContent=`RISK ${(state.riskLevel*100).toFixed(0)}%`;
-  document.getElementById("startBtn").innerHTML=state.running?`<span class="running-dot"></span>PAUSE BOT`:"▶ START BOT";
-  document.getElementById("startBtn").className=`btn ${state.running?"btn-danger":"btn-primary"}`;
+  if (state.error && state.trades.length === 0) {
+    c.innerHTML = `<div class="card card-red">
+      <div class="lbl">CONNECTION ERROR</div>
+      <div style="font-family:var(--mono);font-size:11px;color:#ff2d55;margin-bottom:8px">${state.error}</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted)">
+        Make sure your Supabase key is set in the app and your bots have run at least once.
+        <br><br>Check GitHub Actions for errors.
+      </div>
+    </div>`;
+    return;
+  }
+  switch(state.activeTab) {
+    case "dashboard": c.innerHTML = renderDashboard(); break;
+    case "bots":      c.innerHTML = renderBots();      break;
+    case "trades":    c.innerHTML = renderTrades();    break;
+    case "report":    c.innerHTML = renderReport();    break;
+    case "roadmap":   c.innerHTML = renderRoadmap();   break;
+  }
+  // Draw sparklines after render
+  const curve = combinedCurve();
+  if (curve.length > 1) drawSpark("spark-main", curve, "#00e5ff");
+  for (const bot of BOT_IDS) {
+    const eq = (state.equity[bot]||[]).map(e=>e.equity);
+    if (eq.length > 1) drawSpark(`spark-${bot}`, eq, BOT_COLORS[bot]);
+  }
 }
 
-// ── DASHBOARD ──────────────────────────────────────────────────────
-function renderDashboard(){
-  const pnl=state.totalValue-STARTING,pnlPct=pnl/STARTING*100;
-  const goalPct=Math.min(state.totalValue/GOAL*100,100);
-  const dd=state.peakValue>0?(state.peakValue-state.totalValue)/state.peakValue*100:0;
-  const tt=state.winCount+state.lossCount,wr=tt>0?state.winCount/tt*100:0;
-  const sharpe=calcSharpe(state.dailyReturns),sortino=calcSortino(state.dailyReturns);
-  const pnlColor=pnl>=0?"var(--g1)":"var(--danger)";
-  const held=ASSETS.filter(a=>(state.holdings[a.id]||0)>0);
+function updateNav() {
+  document.querySelectorAll(".tab").forEach((t,i) => {
+    const names = ["dashboard","bots","trades","report","roadmap"];
+    t.classList.toggle("active", names[i]===state.activeTab);
+  });
+  document.querySelectorAll(".bn").forEach((b,i) => {
+    const names = ["dashboard","bots","trades","report","roadmap"];
+    b.classList.toggle("active", names[i]===state.activeTab);
+  });
+}
+
+// ── DASHBOARD ──────────────────────────────────
+function renderDashboard() {
+  const total = totalEquity();
+  const startTotal = STARTING * BOT_IDS.length;
+  const pnl = total - startTotal;
+  const pnlP = pnl / startTotal * 100;
+  const goalPct = Math.min(total / GOAL * 100, 100);
+  const pnlColor = pnl >= 0 ? "var(--g2)" : "var(--danger)";
+
+  let allWins = 0, allLosses = 0;
+  for (const bot of BOT_IDS) {
+    allWins += state.stats[bot]?.wins || 0;
+    allLosses += state.stats[bot]?.losses || 0;
+  }
+  const totalTrades = allWins + allLosses;
+  const wr = totalTrades > 0 ? allWins/totalTrades*100 : 0;
+
+  const allSells = state.trades.filter(t=>t.action==="SELL");
+  const totalPnL = allSells.reduce((s,t)=>s+(t.profit||0),0);
+
   return `
-  <div class="card card-accent-green">
-    <div class="card-label">PORTFOLIO VALUE</div>
-    <div class="card-value" style="color:${pnlColor}">${fmtUSD(state.totalValue)}</div>
-    <div class="card-sub" style="color:${pnlColor}">${pct(pnlPct)} (${pnl>=0?"+":""}${fmtUSD(pnl)})</div>
-    <div style="margin-top:8px">
-      <canvas id="spark-equity" width="100%" height="50" style="width:100%;height:50px"></canvas>
-      <div class="pbar-wrap">
-        <div class="pbar-fill" style="width:${goalPct}%;background:linear-gradient(90deg,var(--g2),var(--g1))"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px">
-        <span>$200</span><span>${goalPct.toFixed(1)}% to $25K</span>
-      </div>
+  <div class="card card-cyan">
+    <div class="lbl">TOTAL PORTFOLIO</div>
+    <div class="val" style="color:${pnlColor}">${fmtUSD(total)}</div>
+    <div class="sub" style="color:${pnlColor}">${pct(pnlP)} · ${pnl>=0?"+":""}${fmtUSD(pnl)} total P&L</div>
+    <canvas id="spark-main" height="48" style="margin-top:10px"></canvas>
+    <div class="pbar">
+      <div class="pfill" style="width:${goalPct}%;background:linear-gradient(90deg,var(--g1),var(--g2))"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:3px">
+      <span>$${startTotal} START</span><span>${goalPct.toFixed(1)}% → $${GOAL.toLocaleString()} GOAL</span>
     </div>
   </div>
-  <div class="grid2">
+
+  <div class="g2">
     <div class="card">
-      <div class="card-label">WIN RATE</div>
-      <div class="card-value" style="color:${wr>=55?"var(--g1)":wr>=45?"var(--g3)":"var(--danger)"};font-size:26px">${wr.toFixed(0)}%</div>
-      <div class="card-sub">${state.winCount}W · ${state.lossCount}L · ${tt} total</div>
+      <div class="lbl">WIN RATE</div>
+      <div class="val" style="font-size:26px;color:${wr>=55?"var(--g2)":wr>=45?"var(--g3)":"var(--danger)"}">${wr.toFixed(0)}%</div>
+      <div class="sub">${allWins}W · ${allLosses}L · ${totalTrades} total</div>
     </div>
     <div class="card">
-      <div class="card-label">DRAWDOWN</div>
-      <div class="card-value" style="color:${dd>12?"var(--danger)":dd>6?"var(--g3)":"var(--g1)"};font-size:26px">${dd.toFixed(1)}%</div>
-      <div class="card-sub">Peak: ${fmtUSD(state.peakValue)}</div>
-    </div>
-    <div class="card">
-      <div class="card-label">SHARPE RATIO</div>
-      <div class="card-value" style="color:${sharpe>1?"var(--g1)":sharpe>0?"var(--g3)":"var(--danger)"};font-size:26px">${sharpe.toFixed(2)}</div>
-      <div class="card-sub">Sortino: ${sortino.toFixed(2)}</div>
-    </div>
-    <div class="card">
-      <div class="card-label">RISK LEVEL</div>
-      <div class="card-value" style="color:${state.riskLevel<0.4?"var(--danger)":state.riskLevel>1.2?"var(--g1)":"var(--g3)"};font-size:26px">${(state.riskLevel*100).toFixed(0)}%</div>
-      <div class="card-sub" style="font-size:9px">${state.riskReason}</div>
+      <div class="lbl">REALIZED P&L</div>
+      <div class="val" style="font-size:22px;color:${totalPnL>=0?"var(--g2)":"var(--danger)"}">${totalPnL>=0?"+":""}${fmtUSD(totalPnL)}</div>
+      <div class="sub">${allSells.length} closed trades</div>
     </div>
   </div>
+
   <div class="card">
-    <div class="card-label">CASH AVAILABLE</div>
-    <div style="font-family:var(--mono);font-size:18px;font-weight:700">${fmtUSD(state.balance)}</div>
-  </div>
-  ${held.length>0?`
-  <div class="card">
-    <div class="card-label">OPEN POSITIONS (${held.length})</div>
-    ${held.map(a=>{
-      const h=state.holdings[a.id]||0;
-      const cur=state.prices[a.id][state.prices[a.id].length-1];
-      const val=h*cur,basis=state.costBasis[a.id]||cur;
-      const pp=(val-(h*basis))/(h*basis)*100;
-      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">
-        <div>
-          <span style="font-family:var(--display);font-size:13px;color:${a.color}">${a.id}</span>
-          <span style="font-family:var(--mono);font-size:9px;color:${STRAT_COLORS[state.entryStrat[a.id]]||"var(--muted)"}"> ${state.entryStrat[a.id]||""}</span>
+    <div class="lbl">3 BOTS — LIVE STATUS</div>
+    ${BOT_IDS.map(bot=>{
+      const eq = state.equity[bot]||[];
+      const cur = eq.length > 0 ? eq[eq.length-1].equity : STARTING;
+      const prev = eq.length > 1 ? eq[eq.length-2].equity : STARTING;
+      const chg = (cur-prev)/prev*100;
+      const color = BOT_COLORS[bot];
+      const trades = state.trades.filter(t=>t.bot_id===bot);
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:8px;height:8px;border-radius:50%;background:${color};box-shadow:0 0 6px ${color}"></div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:${color};letter-spacing:1px">${BOT_NAMES[bot]}</div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--muted)">${trades.length} trades logged</div>
+          </div>
         </div>
         <div style="text-align:right">
-          <div style="font-family:var(--mono);font-size:12px;font-weight:700">${fmtUSD(val)}</div>
-          <div style="font-family:var(--mono);font-size:10px;color:${pp>=0?"var(--g1)":"var(--danger)"}">${pct(pp)}</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700">${fmtUSD(cur)}</div>
+          <div style="font-family:var(--mono);font-size:9px;color:${chg>=0?"var(--g2)":"var(--danger)"}">${chg>=0?"+":""}${chg.toFixed(2)}%</div>
         </div>
       </div>`;
     }).join("")}
-  </div>`:""}
-  ${state.trades.slice(0,5).length>0?`
+  </div>
+
+  ${state.trades.length > 0 ? `
   <div class="card">
-    <div class="card-label">RECENT TRADES</div>
-    ${state.trades.slice(0,5).map(t=>`
-    <div class="trade-row">
+    <div class="lbl">RECENT TRADES</div>
+    ${state.trades.slice(0,4).map(t=>`
+    <div class="tr">
       <div>
-        <span class="trade-action" style="color:${t.action==="BUY"?"var(--g1)":"var(--danger)"}">${t.action}</span>
-        <span class="trade-coin" style="color:${ASSETS.find(a=>a.id===t.coin)?.color||"#fff"}"> ${t.coin}</span>
-        <span style="font-family:var(--mono);font-size:9px;color:var(--muted)"> @${fmtPrice(t.price,t.coin)}</span>
-        <div class="trade-reason">${t.reason}</div>
+        <span class="tr-action" style="color:${t.action==="BUY"?"var(--g2)":"var(--danger)"}">${t.action}</span>
+        <span class="tr-coin" style="margin-left:6px">${t.symbol?.replace("/USD","")}</span>
+        <div class="tr-reason">${t.reason||t.strategy} · ${t.bot_id?.replace("BOT","B")}</div>
       </div>
-      <div class="trade-val">
-        ${fmtUSD(t.value)}
-        ${t.profit!==undefined?`<div class="trade-pnl" style="color:${t.profit>=0?"var(--g1)":"var(--danger)"}">${t.profit>=0?"+":""}${fmtUSD(t.profit)}</div>`:""}
+      <div class="tr-val">${fmtUSD(t.value||0)}
+        ${t.profit!=null?`<div class="tr-pnl" style="color:${t.profit>=0?"var(--g2)":"var(--danger)"}">${t.profit>=0?"+":""}${fmtUSD(t.profit)}</div>`:""}
       </div>
     </div>`).join("")}
-    <div style="text-align:center;margin-top:8px"><button class="btn btn-outline btn-sm" onclick="switchTab('journal')">VIEW ALL TRADES →</button></div>
-  </div>`:""}
-  ${state.phase==="READY"?`<div class="card card-accent-gold" style="text-align:center;padding:20px">
-    <div style="font-size:24px;margin-bottom:8px">🎯</div>
-    <div style="font-family:var(--display);font-size:18px;color:var(--g3);letter-spacing:1px">GOAL REACHED — $25,000!</div>
-    <div style="font-size:12px;color:var(--muted);margin-top:6px">Paper trading strategy proven. Ready for real capital.</div>
-    <button class="btn btn-gold" style="margin-top:12px" onclick="state.phase='LIVE';renderContent()">ACTIVATE LIVE MODE</button>
-  </div>`:""}
-  ${state.propFailed?`<div class="card card-accent-red" style="text-align:center;padding:16px">
-    <div style="font-size:20px;margin-bottom:6px">❌</div>
-    <div style="font-family:var(--display);font-size:14px;color:var(--danger)">PROP CHALLENGE FAILED</div>
-    <div style="font-size:11px;color:var(--muted);margin-top:4px">${state.propFailReason}</div>
-    <button class="btn btn-danger btn-sm" style="margin-top:10px" onclick="resetProp()">RESET CHALLENGE</button>
-  </div>`:""}
+  </div>` : `
+  <div class="card">
+    <div class="lbl">TRADES</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--muted);padding:12px 0">
+      No trades yet — bots are analyzing markets.<br>Check back after the next GitHub Actions run.
+    </div>
+  </div>`}
   `;
 }
 
-// ── ASSETS ────────────────────────────────────────────────────────
-function renderAssets(){
-  return ASSETS.map(a=>{
-    const p=state.prices[a.id];const cur=p[p.length-1];
-    const rsi=calcRSI(p),chg=p.length>1?(cur-p[0])/p[0]*100:0;
-    const vol=calcVol(p)*100;const held=state.holdings[a.id]||0;
-    const sig=sigMomentum(p)+sigTrend(p);
-    const sigStr=sig>0.3?"BUY":sig<-0.3?"SELL":"HOLD";
-    const sigColor=sig>0.3?"var(--g1)":sig<-0.3?"var(--danger)":"var(--g3)";
-    return `<div class="card" style="border-color:${a.color}33">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+// ── BOTS ───────────────────────────────────────
+function renderBots() {
+  return BOT_IDS.map(bot=>{
+    const eq = state.equity[bot]||[];
+    const cur = eq.length > 0 ? eq[eq.length-1].equity : STARTING;
+    const stats = state.stats[bot]||{wins:0,losses:0};
+    const weights = state.weights[bot]||{};
+    const color = BOT_COLORS[bot];
+    const tt = (stats.wins||0)+(stats.losses||0);
+    const wr = tt > 0 ? (stats.wins||0)/tt*100 : 0;
+    const pnl = cur - STARTING;
+    const pnlP = pnl/STARTING*100;
+    const trades = state.trades.filter(t=>t.bot_id===bot);
+    const botSells = trades.filter(t=>t.action==="SELL");
+    const totalBotPnL = botSells.reduce((s,t)=>s+(t.profit||0),0);
+    const peakDD = stats.peak_equity > 0 ? (stats.peak_equity-cur)/stats.peak_equity*100 : 0;
+    return `
+    <div class="card" style="border-color:${color}33">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
         <div>
-          <div style="font-family:var(--display);font-size:16px;color:${a.color}">${a.id}</div>
-          <div style="font-size:11px;color:var(--muted)">${a.name} · ${a.sector}</div>
+          <div style="font-size:14px;font-weight:800;color:${color};letter-spacing:2px">${BOT_NAMES[bot]}</div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px">${bot}</div>
         </div>
-        ${held>0?`<span class="badge badge-blue">HELD</span>`:`<span class="badge" style="color:${sigColor};background:${sigColor}18;border:1px solid ${sigColor}33">${sigStr}</span>`}
+        <div style="text-align:right">
+          <div style="font-family:var(--mono);font-size:16px;font-weight:700">${fmtUSD(cur)}</div>
+          <div style="font-family:var(--mono);font-size:10px;color:${pnl>=0?"var(--g2)":"var(--danger)"}">${pct(pnlP)}</div>
+        </div>
       </div>
-      <div style="font-family:var(--mono);font-size:17px;font-weight:700;margin-bottom:6px">${fmtPrice(cur,a.id)}</div>
-      <canvas id="spark-${a.id}" width="200" height="36" style="width:100%;height:36px"></canvas>
-      <div class="grid3" style="margin-top:8px;gap:6px">
-        <div><div class="card-label">RSI</div><div style="font-family:var(--mono);font-size:12px;color:${rsi>70?"var(--danger)":rsi<30?"var(--g1)":"var(--g3)"}">${rsi.toFixed(0)}</div></div>
-        <div><div class="card-label">CHANGE</div><div style="font-family:var(--mono);font-size:12px;color:${chg>=0?"var(--g1)":"var(--danger)"}">${chg>=0?"+":""}${chg.toFixed(1)}%</div></div>
-        <div><div class="card-label">VOL</div><div style="font-family:var(--mono);font-size:12px">${vol.toFixed(2)}%</div></div>
+      <canvas id="spark-${bot}" height="40" style="margin-bottom:10px"></canvas>
+      <div class="g3" style="gap:6px;margin-bottom:10px">
+        <div style="background:var(--bg2);padding:7px;border-radius:6px">
+          <div class="lbl">WIN RATE</div>
+          <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:${wr>=50?"var(--g2)":"var(--danger)"}">${wr.toFixed(0)}%</div>
+        </div>
+        <div style="background:var(--bg2);padding:7px;border-radius:6px">
+          <div class="lbl">TRADES</div>
+          <div style="font-family:var(--mono);font-size:13px;font-weight:700">${tt}</div>
+        </div>
+        <div style="background:var(--bg2);padding:7px;border-radius:6px">
+          <div class="lbl">P&L</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:${totalBotPnL>=0?"var(--g2)":"var(--danger)"}">${totalBotPnL>=0?"+":""}${fmtUSD(totalBotPnL)}</div>
+        </div>
       </div>
+      <div class="lbl">AI STRATEGY WEIGHTS</div>
+      ${Object.entries(weights).filter(([k])=>k.includes("weight")).map(([k,v])=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--muted)">${k.replace("_weight","").toUpperCase()}</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:80px;height:3px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden">
+              <div style="width:${Math.min((v/2)*100,100)}%;height:100%;background:${color};border-radius:2px"></div>
+            </div>
+            <div style="font-family:var(--mono);font-size:9px;color:${color}">${(v*100).toFixed(0)}%</div>
+          </div>
+        </div>`).join("")}
+      ${Object.keys(weights).filter(k=>k.includes("weight")).length===0?
+        `<div style="font-family:var(--mono);font-size:10px;color:var(--muted)">Weights update after first AI brain run (Sunday)</div>`:""}
+      <div class="lbl" style="margin-top:8px">DRAWDOWN FROM PEAK</div>
+      <div class="pbar">
+        <div class="pfill" style="width:${Math.min(peakDD,100)}%;background:${peakDD>10?"var(--danger)":peakDD>5?"var(--g3)":"var(--g2)"}"></div>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px">${peakDD.toFixed(1)}% from peak ${fmtUSD(stats.peak_equity||STARTING)}</div>
     </div>`;
   }).join("");
 }
 
-// ── PROP CHALLENGE ─────────────────────────────────────────────────
-function renderProp(){
-  const totalPnL=(state.totalValue-state.propStartBalance)/state.propStartBalance*100;
-  const phase1Target=PROP.target*100,phase2Target=PROP.phase2target*100;
-  const curTarget=state.propPhase===1?phase1Target:phase2Target;
-  const progPct=Math.max(0,Math.min(totalPnL/curTarget*100,100));
-  const maxDD=(state.propStartBalance-state.totalValue)/state.propStartBalance*100;
-  const dailyLoss=state.propDailyLoss*100;
-  const daysLeft=Math.max(0,PROP.minDays-state.propTradingDays);
-  const ddSafe=maxDD<PROP.maxDrawdown*100*0.8;
-  const dailySafe=dailyLoss<PROP.dailyLimit*100*0.8;
+// ── TRADES ─────────────────────────────────────
+function renderTrades() {
+  const sells = state.trades.filter(t=>t.action==="SELL");
+  const buys = state.trades.filter(t=>t.action==="BUY");
+  const wins = sells.filter(t=>(t.profit||0)>0);
   return `
-  <div class="card card-accent-gold">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <div>
-        <div class="card-label">PROP FIRM CHALLENGE</div>
-        <div style="font-family:var(--display);font-size:14px;color:var(--g3)">FTMO STANDARD MODEL</div>
+  <div class="card card-cyan">
+    <div class="lbl">TRADE LOG — ${state.trades.length} TOTAL</div>
+    <div class="g3" style="gap:6px;margin-top:4px">
+      <div style="background:var(--bg2);padding:8px;border-radius:6px;text-align:center">
+        <div class="lbl">BUYS</div>
+        <div style="font-family:var(--mono);font-size:16px;color:var(--g2)">${buys.length}</div>
       </div>
-      <span class="badge ${state.propPassed?"badge-green":state.propFailed?"badge-red":"badge-gold"}">
-        ${state.propPassed?"✅ PASSED":state.propFailed?"❌ FAILED":`PHASE ${state.propPhase}/2`}
-      </span>
-    </div>
-    ${state.propPassed?`<div style="text-align:center;padding:16px">
-      <div style="font-size:28px;margin-bottom:8px">🏆</div>
-      <div style="font-family:var(--display);font-size:16px;color:var(--g1)">CHALLENGE COMPLETE!</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:6px">Apply to FTMO or Apex now for a real funded account up to $200,000</div>
-      <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
-        <div style="padding:8px;background:rgba(0,255,136,0.08);border-radius:6px;font-size:11px;color:var(--g1)">→ Apply at ftmo.com — $540 for $100K account</div>
-        <div style="padding:8px;background:rgba(0,212,255,0.08);border-radius:6px;font-size:11px;color:var(--g2)">→ Apply at apextraderfunding.com — ~$20 promo for $50K</div>
+      <div style="background:var(--bg2);padding:8px;border-radius:6px;text-align:center">
+        <div class="lbl">SELLS</div>
+        <div style="font-family:var(--mono);font-size:16px;color:var(--danger)">${sells.length}</div>
       </div>
-    </div>`:state.propFailed?`<div style="text-align:center;padding:12px">
-      <div style="font-size:14px;color:var(--danger)">${state.propFailReason}</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:4px">Study the rules, tighten risk sizing, try again.</div>
-      <button class="btn btn-danger btn-sm" style="margin-top:10px" onclick="resetProp()">RESET & RETRY</button>
-    </div>`:`
-    <div class="card-label" style="margin-top:4px">PROFIT TARGET PHASE ${state.propPhase} — ${curTarget}%</div>
-    <div style="font-family:var(--mono);font-size:18px;color:${totalPnL>=0?"var(--g1)":"var(--danger)"}">
-      ${totalPnL>=0?"+":""}${totalPnL.toFixed(2)}% / ${curTarget}%
+      <div style="background:var(--bg2);padding:8px;border-radius:6px;text-align:center">
+        <div class="lbl">WIN %</div>
+        <div style="font-family:var(--mono);font-size:16px;color:${wins.length/Math.max(sells.length,1)*100>=50?"var(--g2)":"var(--danger)"}">${sells.length>0?(wins.length/sells.length*100).toFixed(0):0}%</div>
+      </div>
     </div>
-    <div class="challenge-bar">
-      <div class="challenge-fill" style="width:${progPct}%;background:linear-gradient(90deg,var(--g2),var(--g1))"></div>
-    </div>
-    <div style="margin-top:12px">
-      ${[
-        {name:"Max Daily Loss",limit:"5%",current:`${dailyLoss.toFixed(2)}%`,safe:dailySafe,pct:dailyLoss/5*100},
-        {name:"Max Total Drawdown",limit:"10%",current:`${maxDD.toFixed(2)}%`,safe:ddSafe,pct:maxDD/10*100},
-        {name:"Min Trading Days",limit:`${PROP.minDays} days`,current:`${state.propTradingDays} days`,safe:daysLeft===0,pct:state.propTradingDays/PROP.minDays*100},
-      ].map(r=>`
-      <div class="rule-row">
-        <div>
-          <div class="rule-name">${r.name}</div>
-          <div class="challenge-bar" style="height:4px;width:120px;margin-top:4px">
-            <div class="challenge-fill" style="width:${Math.min(r.pct,100)}%;background:${r.pct>80?"var(--danger)":r.pct>60?"var(--g3)":"var(--g1)"}"></div>
+  </div>
+  <div class="card">
+    <div class="lbl">ALL TRADES</div>
+    ${state.trades.length === 0 ?
+      `<div style="font-family:var(--mono);font-size:11px;color:var(--muted);padding:16px 0">No trades yet. Bots run every 15 minutes via GitHub Actions.</div>` :
+      state.trades.slice(0,30).map(t=>{
+        const color = BOT_COLORS[t.bot_id]||"#fff";
+        const sym = t.symbol?.replace("/USD","");
+        const ts = t.timestamp ? new Date(t.timestamp).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}) : "";
+        return `<div class="tr">
+          <div>
+            <div style="display:flex;gap:6px;align-items:center">
+              <span class="tr-action" style="color:${t.action==="BUY"?"var(--g2)":"var(--danger)"}">${t.action}</span>
+              <span class="tr-coin" style="color:${color}">${sym}</span>
+              <span style="font-family:var(--mono);font-size:8px;color:${color};background:${color}18;padding:1px 5px;border-radius:3px">${BOT_NAMES[t.bot_id]||t.bot_id}</span>
+            </div>
+            <div class="tr-reason">${t.reason||t.strategy||""} · ${ts}</div>
           </div>
-        </div>
-        <div style="text-align:right">
-          <div class="rule-val" style="color:${r.safe?"var(--g1)":"var(--danger)"}">${r.current}</div>
-          <div class="rule-status" style="color:var(--muted)">Limit: ${r.limit}</div>
-        </div>
-      </div>`).join("")}
+          <div class="tr-val">${fmtUSD(t.value||0)}
+            ${t.profit!=null?`<div class="tr-pnl" style="color:${t.profit>=0?"var(--g2)":"var(--danger)"}">${t.profit>=0?"+":""}${fmtUSD(t.profit)}</div>`:""}
+          </div>
+        </div>`;
+      }).join("")
+    }
+  </div>`;
+}
+
+// ── REPORT ─────────────────────────────────────
+function renderReport() {
+  const r = state.report;
+  return `
+  <div class="card card-cyan">
+    <div class="lbl">AI BRAIN — WEEKLY ANALYSIS</div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:10px">
+      Claude analyzes all trade history every Sunday and rewrites strategy weights.
+      Reports are generated automatically and saved here.
     </div>
-    <div style="margin-top:12px;padding:10px;background:rgba(255,215,0,0.06);border-radius:8px;font-size:11px;color:var(--muted)">
-      ⚠️ Bot automatically halts trading when within 1% of daily or total drawdown limits. Prop rules are enforced in real time.
+    ${r ? `
+    <div style="font-family:var(--mono);font-size:9px;color:var(--g1);margin-bottom:8px">
+      Week ending: ${new Date(r.week_ending).toLocaleDateString()}
+    </div>
+    <div class="report-box">${r.report_text}</div>
+    ` : `
+    <div class="report-box" style="color:var(--muted)">
+      No AI report yet. The AI Brain runs every Sunday automatically,
+      or you can trigger it manually in GitHub Actions by running the workflow
+      with "run_ai_brain" set to true.
     </div>`}
   </div>
   <div class="card">
-    <div class="card-label">PROP FIRM OPTIONS</div>
-    ${[
-      {name:"FTMO",acct:"$100K",fee:"$540",split:"90%",target:"10% + 5%",dd:"5% daily / 10% total",color:"var(--g1)"},
-      {name:"Apex Trader",acct:"$50K",fee:"~$20",split:"100%*",target:"$3,000 fixed",dd:"$2,500 trailing",color:"var(--g2)"},
-      {name:"The5ers",acct:"$100K",fee:"$299",split:"100%",target:"8%",dd:"5% daily / 10% total",color:"var(--g3)"},
-    ].map(f=>`<div style="padding:10px 0;border-bottom:1px solid var(--border)">
-      <div style="font-family:var(--display);font-size:13px;color:${f.color};margin-bottom:4px">${f.name} — ${f.acct}</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:11px;color:var(--muted)">
-        <span>Fee: <b style="color:var(--text)">${f.fee}</b></span>
-        <span>Split: <b style="color:var(--text)">${f.split}</b></span>
-        <span>Target: <b style="color:var(--text)">${f.target}</b></span>
-        <span>Drawdown: <b style="color:var(--text)">${f.dd}</b></span>
-      </div>
-    </div>`).join("")}
-  </div>`;
-}
-
-// ── STRATEGIES ────────────────────────────────────────────────────
-function renderStrategies(){
-  const tt=state.winCount+state.lossCount;
-  const wr=tt>0?state.winCount/tt*100:0;
-  const sharpe=calcSharpe(state.dailyReturns);
-  const sortino=calcSortino(state.dailyReturns);
-  const topStrat=Object.entries(state.stratPnL).sort((a,b)=>b[1]-a[1])[0];
-  return `
-  <div class="card">
-    <div class="card-label">PERFORMANCE METRICS</div>
-    <div class="grid2" style="margin-top:4px">
-      ${[
-        {l:"Sharpe Ratio",v:sharpe.toFixed(2),c:sharpe>1?"var(--g1)":sharpe>0?"var(--g3)":"var(--danger)"},
-        {l:"Sortino Ratio",v:sortino.toFixed(2),c:sortino>1.5?"var(--g1)":sortino>0?"var(--g3)":"var(--danger)"},
-        {l:"Win Rate",v:`${wr.toFixed(0)}%`,c:wr>=55?"var(--g1)":wr>=45?"var(--g3)":"var(--danger)"},
-        {l:"Total Trades",v:tt,c:"var(--text)"},
-        {l:"Best Strategy",v:topStrat?topStrat[0]:"—",c:topStrat?STRAT_COLORS[topStrat[0]]:"var(--muted)"},
-        {l:"Best Strat PnL",v:topStrat?`$${topStrat[1].toFixed(2)}`:"—",c:"var(--g1)"},
-      ].map(m=>`<div style="padding:8px;background:var(--bg2);border-radius:6px"><div class="card-label">${m.l}</div><div style="font-family:var(--mono);font-size:13px;font-weight:700;color:${m.c}">${m.v}</div></div>`).join("")}
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-label">ENSEMBLE STRATEGIES — SELF-ADAPTING</div>
-    ${STRATS.map(s=>{
-      const w=state.stratWeights[s]||1;
-      const pnl=state.stratPnL[s]||0;
-      const c=STRAT_COLORS[s];
-      const descs={MOMENTUM:"RSI + EMA crossover + MACD confluence",MEAN_REV:"Bollinger Band reversion on extremes",TREND:"Multi-timeframe EMA alignment",BREAKOUT:"ATR-based range breakout detection",SENTIMENT:"Price-action fear/greed proxy",MACRO:"Macro cycle + volatility regime filter"};
-      return `<div class="strat-card" style="background:${c}09;border-color:${c}22">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div class="strat-name" style="color:${c}">${s}</div>
-          <div style="display:flex;gap:6px;align-items:center">
-            <span style="font-family:var(--mono);font-size:10px;color:${pnl>=0?"var(--g1)":"var(--danger)"}">${pnl>=0?"+":""}$${pnl.toFixed(2)}</span>
-            <span class="badge" style="background:${c}18;border:1px solid ${c}33;color:${c}">${(w*100).toFixed(0)}%</span>
-          </div>
-        </div>
-        <div class="strat-desc">${descs[s]}</div>
-        <div class="pbar-wrap">
-          <div class="pbar-fill" style="width:${Math.min(w/2*100,100)}%;background:${c}"></div>
-        </div>
+    <div class="lbl">CURRENT STRATEGY WEIGHTS</div>
+    ${BOT_IDS.map(bot=>{
+      const w = state.weights[bot]||{};
+      const color = BOT_COLORS[bot];
+      return `<div style="margin-bottom:12px">
+        <div style="font-size:11px;font-weight:700;color:${color};letter-spacing:1px;margin-bottom:6px">${BOT_NAMES[bot]}</div>
+        ${Object.entries(w).length > 0 ?
+          Object.entries(w).map(([k,v])=>`
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;margin-bottom:3px">
+            <span style="color:var(--muted)">${k}</span>
+            <span style="color:${color}">${typeof v==="number"?v.toFixed(2):v}</span>
+          </div>`).join("") :
+          `<div style="font-family:var(--mono);font-size:9px;color:var(--muted)">No weights yet — updates after first AI run</div>`
+        }
       </div>`;
     }).join("")}
-  </div>
-  <div class="card">
-    <div class="card-label">RISK MANAGEMENT STACK</div>
-    ${[
-      {n:"Kelly Criterion",d:"Half-Kelly optimal sizing based on live win rate & avg P&L",c:"var(--g1)"},
-      {n:"ATR Stop-Loss (×2.5)",d:"Volatility-adaptive stops — widen in choppy markets",c:"var(--g3)"},
-      {n:"Correlation Matrix",d:"Prevents holding 2+ correlated assets simultaneously",c:"var(--g2)"},
-      {n:"Drawdown Shield",d:"Risk halves at 6% DD, quarters at 12%, stops at 20%",c:"var(--danger)"},
-      {n:"Prop Rule Enforcer",d:"Hard-stops trading before daily/total FTMO limits are breached",c:"var(--purple)"},
-      {n:"Growth Protector",d:"Position sizes scale down as portfolio approaches $25K goal",c:"#ff6b35"},
-    ].map(r=>`<div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:flex-start">
-      <div style="width:8px;height:8px;border-radius:50%;background:${r.c};margin-top:4px;flex-shrink:0"></div>
-      <div><div style="font-size:12px;font-weight:600;color:#ccd">${r.n}</div><div style="font-size:11px;color:var(--muted);margin-top:1px">${r.d}</div></div>
-    </div>`).join("")}
   </div>`;
 }
 
-// ── AI BRAIN ──────────────────────────────────────────────────────
-function renderAI(){
-  const ai=state.aiInsight;
-  const regimeColors={BULL:"var(--g1)",BEAR:"var(--danger)",SIDEWAYS:"var(--g2)",VOLATILE:"var(--g3)"};
-  return `
-  <div style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-    <div style="font-family:var(--display);font-size:13px;letter-spacing:1px">CLAUDE AI BRAIN</div>
-    <button class="btn btn-outline btn-sm" onclick="callAI()" ${state.aiLoading?"disabled":""}>
-      ${state.aiLoading?"🧠 THINKING...":"🧠 ANALYZE NOW"}
-    </button>
-  </div>
-  ${state.aiLoading?`<div class="card"><div style="text-align:center;padding:20px;color:var(--g1);font-family:var(--mono);font-size:11px">Consulting AI — analyzing market conditions and top trader strategies...</div></div>`:""}
-  ${ai&&!state.aiLoading?`
-  <div class="ai-box">
-    <div class="ai-label">CHANNELING ${ai.traderName?.toUpperCase()}</div>
-    <div class="ai-text">"${ai.insight}"</div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
-      <span class="badge" style="background:${(regimeColors[ai.regime]||"#888")}18;border:1px solid ${(regimeColors[ai.regime]||"#888")}33;color:${regimeColors[ai.regime]||"#888"}">${ai.regime}</span>
-      <span class="badge badge-green">▲ ${ai.topAsset}</span>
-      <span class="badge" style="background:${STRAT_COLORS[ai.stratFocus]||"#888"}18;border:1px solid ${STRAT_COLORS[ai.stratFocus]||"#888"}33;color:${STRAT_COLORS[ai.stratFocus]||"#888"}">FOCUS: ${ai.stratFocus}</span>
-      <span class="badge badge-gold">RISK ×${ai.riskAdj?.toFixed(1)}</span>
-    </div>
-  </div>
-  ${ai.warning?`<div class="warning-box" style="margin-bottom:10px"><div class="warning-label">⚠ RISK WARNING</div><div style="font-size:12px;color:#aab">${ai.warning}</div></div>`:""}
-  `:`${!state.aiLoading?`<div class="card"><div style="text-align:center;padding:20px;color:var(--muted);font-size:12px">Start bot or tap "Analyze Now" for AI insights</div></div>`:""}` }
-  <div class="card">
-    <div class="card-label">TRADER PHILOSOPHIES — ACTIVE TRAINING</div>
-    ${TRADERS.map(t=>`<div style="padding:9px 0;border-bottom:1px solid var(--border)">
-      <div style="font-family:var(--display);font-size:12px;color:var(--g2);margin-bottom:3px">${t.name}</div>
-      <div style="font-size:11px;color:var(--muted);line-height:1.4">${t.style}</div>
-    </div>`).join("")}
-  </div>
-  ${state.mcResults?`<div class="card card-accent-blue">
-    <div class="card-label">MONTE CARLO — ${state.mcResults.sims.toLocaleString()} SIMULATIONS</div>
-    ${[
-      {l:"5th Percentile (Worst)",v:fmtUSD(state.mcResults.worst),c:"var(--danger)"},
-      {l:"25th Percentile",v:fmtUSD(state.mcResults.p25),c:"var(--g3)"},
-      {l:"Median Outcome",v:fmtUSD(state.mcResults.median),c:"var(--text)"},
-      {l:"75th Percentile",v:fmtUSD(state.mcResults.p75),c:"var(--g1)"},
-      {l:"95th Percentile (Best)",v:fmtUSD(state.mcResults.best),c:"var(--g1)"},
-      {l:"Probability of $25K",v:`${state.mcResults.pctGoal.toFixed(1)}%`,c:"var(--g2)"},
-      {l:"Survival Rate",v:`${state.mcResults.pctSurvive.toFixed(1)}%`,c:"var(--g1)"},
-    ].map(r=>`<div class="mc-row"><div class="mc-label">${r.l}</div><div class="mc-val" style="color:${r.c}">${r.v}</div></div>`).join("")}
-  </div>`:""}`;
-}
-
-// ── BACKTEST ──────────────────────────────────────────────────────
-function renderBacktest(){
-  const bt=state.backtestResults;
-  return `
-  <div class="card">
-    <div class="card-label">HISTORICAL BACKTEST SIMULATION</div>
-    <div style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.5">
-      Runs 10 independent 6-month simulations using randomized market conditions, regime changes, and volatility to stress-test the strategy.
-    </div>
-    <button class="btn btn-outline" onclick="runBacktest()" style="width:100%">▶ RUN 6-MONTH BACKTEST</button>
-  </div>
-  ${bt?`
-  <div class="card card-accent-green">
-    <div class="card-label">BACKTEST RESULTS — 10 RUNS</div>
-    ${[
-      {l:"Average Final Balance",v:fmtUSD(bt.avg),c:bt.avg>STARTING?"var(--g1)":"var(--danger)"},
-      {l:"Best Run",v:fmtUSD(bt.best),c:"var(--g1)"},
-      {l:"Worst Run",v:fmtUSD(bt.worst),c:bt.worst>=STARTING?"var(--g3)":"var(--danger)"},
-      {l:"Avg Win Rate",v:`${(bt.avgWR*100).toFixed(1)}%`,c:bt.avgWR>=0.5?"var(--g1)":"var(--danger)"},
-      {l:"Avg Max Drawdown",v:`${(bt.avgDD*100).toFixed(1)}%`,c:bt.avgDD<0.10?"var(--g1)":bt.avgDD<0.20?"var(--g3)":"var(--danger)"},
-    ].map(r=>`<div class="mc-row"><div class="mc-label">${r.l}</div><div class="mc-val" style="color:${r.c}">${r.v}</div></div>`).join("")}
-    <div style="margin-top:10px">
-      <div class="card-label">INDIVIDUAL RUNS</div>
-      ${bt.runs.map((r,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:10px">
-        <span style="color:var(--muted)">Run ${i+1}</span>
-        <span style="color:${r.finalBal>STARTING?"var(--g1)":"var(--danger)"}">${fmtUSD(r.finalBal)}</span>
-        <span style="color:var(--muted)">DD: ${(r.maxDD*100).toFixed(1)}%</span>
-        <span style="color:var(--g3)">WR: ${(r.wr*100).toFixed(0)}%</span>
-      </div>`).join("")}
-    </div>
-  </div>`:""}`;
-}
-
-// ── JOURNAL ───────────────────────────────────────────────────────
-function renderJournal(){
-  return `
-  <div class="card">
-    <div class="card-label">TRADING JOURNAL & AI LOG</div>
-    <div style="font-size:11px;color:var(--muted);margin-bottom:10px">Auto-generates weekly AI reflections, trade notes, and milestone alerts.</div>
-    ${state.journalEntries.length===0?`<div style="text-align:center;padding:20px;color:var(--muted);font-size:12px">Journal entries will appear as the bot trades...</div>`:
-    state.journalEntries.map(e=>{
-      const typeColors={win:"var(--g1)",fail:"var(--danger)",info:"var(--g2)"};
-      const c=typeColors[e.type]||"var(--muted)";
-      return `<div class="journal-entry" style="border-left:3px solid ${c}">
-        <div class="journal-date">${e.time} · Tick ${e.tick}</div>
-        <div class="journal-text">${e.text}</div>
-      </div>`;
-    }).join("")}
-  </div>
-  <div class="card">
-    <div class="card-label">RECENT TRADES LOG</div>
-    ${state.trades.slice(0,20).map(t=>`
-    <div class="trade-row">
-      <div>
-        <span class="trade-action" style="color:${t.action==="BUY"?"var(--g1)":"var(--danger)"}">${t.action}</span>
-        <span class="trade-coin" style="color:${ASSETS.find(a=>a.id===t.coin)?.color||"#fff"}"> ${t.coin}</span>
-        <span class="badge" style="margin-left:4px;background:${STRAT_COLORS[t.strategy]||"#888"}18;border:1px solid ${STRAT_COLORS[t.strategy]||"#888"}33;color:${STRAT_COLORS[t.strategy]||"#888"}">${t.strategy}</span>
-        <div class="trade-reason">${t.reason} · ${t.time}</div>
-      </div>
-      <div class="trade-val">
-        ${fmtUSD(t.value)}
-        ${t.profit!==undefined?`<div class="trade-pnl" style="color:${t.profit>=0?"var(--g1)":"var(--danger)"}">${t.profit>=0?"+":""}${fmtUSD(t.profit)}</div>`:""}
-      </div>
-    </div>`).join("")}
-  </div>`;
-}
-
-// ── ROADMAP ───────────────────────────────────────────────────────
-function renderRoadmap(){
-  const steps=[
-    {n:1,title:"NOW → Month 2: Paper Trading",color:"var(--g1)",status:"active",
-     body:"Run this bot in paper mode 24/7. Let it trade automatically. Your only job: check it once a day. Watch the win rate, drawdown, and equity curve stabilize. Target: consistent profitability, Sharpe ratio above 1.0.",
-     tags:["Paper only","No real money","Daily check-in","Study the trades"]},
-    {n:2,title:"Month 2-3: Backtest & Stress Test",color:"var(--g2)",status:"upcoming",
-     body:"Hit the Backtest button weekly. Run Monte Carlo simulations. Look for: worst-case drawdown stays under 15%, win rate above 52%, average profit per trade positive. Adjust strategy weights if needed.",
-     tags:["Run backtests","Monte Carlo","Optimize weights","Check Sharpe"]},
-    {n:3,title:"Month 3-4: Prop Challenge Practice",color:"var(--g3)",status:"upcoming",
-     body:"Switch to Prop Challenge Mode. The bot now enforces FTMO rules: 5% daily loss hard stop, 10% total drawdown limit, minimum 4 trading days. Pass Phase 1 (+10%) then Phase 2 (+5%) on the simulator. Aim to do it 3x consistently.",
-     tags:["FTMO rules active","Pass Phase 1 3×","Pass Phase 2 3×","No rule violations"]},
-    {n:4,title:"Month 4-5: Real $200 on Alpaca",color:"#ff6b35",status:"upcoming",
-     body:"Open a free Alpaca Markets account (alpaca.markets). Deposit your $200. I can add your API keys to this bot so it trades real crypto with real money. Keep position sizes small — this is still learning phase with real skin in the game.",
-     tags:["Open Alpaca account","Connect API keys","$200 real money","Small positions only"]},
-    {n:5,title:"Month 5-6: Apply to Prop Firm",color:"var(--purple)",status:"upcoming",
-     body:"Once your paper + live track record shows 3+ months of profitability with controlled drawdown, apply to a prop firm. Apex Trader Funding runs frequent promotions (~$20). FTMO offers $100K accounts for $540 (refunded after first payout). You keep 70-90% of all profits.",
-     tags:["Apex: ~$20 promo","FTMO: $540 refundable","3-month track record","$25K-$200K funded"]},
-    {n:6,title:"Month 6+: Scale Up",color:"var(--g1)",status:"upcoming",
-     body:"Once funded, keep the bot running with real prop capital. At $100K funded with 5% monthly return, that's $5,000/month keeping 90% = $4,500/month. Request payouts. Compound profits. Apply for larger accounts as your track record grows.",
-     tags:["5% target/month","$100K funded","$4,500/mo potential","Scale to $200K+"]},
+// ── ROADMAP ─────────────────────────────────────
+function renderRoadmap() {
+  const total = totalEquity();
+  const startTotal = STARTING * BOT_IDS.length;
+  const pnlP = (total-startTotal)/startTotal*100;
+  const steps = [
+    {n:1,t:"Paper Trading — Build Track Record",done:true,color:"var(--g2)",
+     d:"3 bots running 24/7 on Alpaca paper trading. Real prices, zero risk. Building proven track record."},
+    {n:2,t:"Pass Prop Challenge Simulation",done:pnlP>=10,color:"var(--g1)",
+     d:`Hit +10% profit target without exceeding 5% daily or 10% total drawdown. Current: ${pct(pnlP)}`},
+    {n:3,t:"Apply to Apex Trader Funding",done:false,color:"var(--g3)",
+     d:"Pass the simulation 3x consistently, then apply. Apex runs ~$20 promos. $50K-$300K funded accounts available."},
+    {n:4,t:"Deposit Real $200 on Alpaca",done:false,color:"#ff6b35",
+     d:"Switch ALPACA_PAPER to false in GitHub Secrets. Same strategy, real money. Start conservative."},
+    {n:5,t:"First Prop Payout",done:false,color:"var(--purple)",
+     d:"5% monthly on $50K funded = $2,500/month. Keep 90% = $2,250. Reinvest to scale accounts."},
+    {n:6,t:"Match Job Income — Year 3-4",done:false,color:"var(--g2)",
+     d:"$100-200K funded, $3,150-$6,300/month take-home. The path to staying home with your kids."},
   ];
   return `
-  <div class="card card-accent-gold" style="margin-bottom:14px">
-    <div class="card-label">YOUR TRADING ROADMAP</div>
-    <div style="font-family:var(--display);font-size:16px;color:var(--g3)">$200 → FUNDED TRADER</div>
-    <div style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5">Realistic, honest path from where you are now to trading other people's money for income. No shortcuts, no guarantees — but this is the proven route.</div>
+  <div class="card card-gold" style="margin-bottom:14px">
+    <div class="lbl">YOUR MISSION</div>
+    <div style="font-size:15px;font-weight:800;color:var(--g3)">$200 → FUNDED TRADER → STAY HOME</div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px">Pay off $400K house · $150K/year · Be present for your kids</div>
+    <div class="pbar" style="margin-top:10px">
+      <div class="pfill" style="width:${Math.min(Math.max(pnlP,0),100)}%;background:var(--g3)"></div>
+    </div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px">Progress toward 10% prop challenge target: ${pct(Math.max(pnlP,0))}</div>
   </div>
   ${steps.map(s=>`
-  <div class="rm-step">
-    <div class="rm-num" style="background:${s.color}22;border:1px solid ${s.color}44;color:${s.color}">${s.n}</div>
+  <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)">
+    <div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+      background:${s.done?s.color+"33":"var(--bg2)"};border:1px solid ${s.done?s.color:s.color+"44"};
+      font-size:11px;font-weight:800;color:${s.done?s.color:"var(--muted)"}">
+      ${s.done?"✓":s.n}
+    </div>
     <div style="flex:1">
-      <div class="rm-title" style="color:${s.color}">${s.title}</div>
-      <div class="rm-body">${s.body}</div>
-      <div style="margin-top:6px">${s.tags.map(t=>`<span class="rm-tag" style="background:${s.color}12;border:1px solid ${s.color}22;color:${s.color}">${t}</span>`).join("")}</div>
+      <div style="font-size:12px;font-weight:700;color:${s.done?s.color:"var(--text)"};margin-bottom:4px">${s.t}</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.5">${s.d}</div>
     </div>
   </div>`).join("")}
-  <div class="card" style="margin-top:14px;background:rgba(255,51,85,0.04);border-color:rgba(255,51,85,0.2)">
-    <div class="card-label" style="color:var(--danger)">HONEST REALITY CHECK</div>
-    <div style="font-size:12px;color:#889;line-height:1.6">
-      • No system guarantees profit. Markets are unpredictable.<br>
-      • Expect to fail the prop challenge 1-3 times before passing.<br>
-      • The $200 could go to zero — only invest what you can afford to lose.<br>
-      • Real edge comes from months of consistent execution, not one lucky run.<br>
-      • This bot gives you a powerful foundation. Your discipline makes it work.
-    </div>
-  </div>
-  <div class="card card-accent-blue" style="margin-top:10px">
-    <div class="card-label">PHONE SETUP — KEEP THIS RUNNING 24/7</div>
-    <div style="font-size:12px;color:#889;line-height:1.7">
-      <b style="color:var(--g2)">Option A — iPhone Safari:</b><br>
-      1. Open this file in Safari<br>
-      2. Tap Share → "Add to Home Screen"<br>
-      3. Opens like a native app, no App Store needed<br><br>
-      <b style="color:var(--g2)">Option B — Android Chrome:</b><br>
-      1. Open this file in Chrome<br>
-      2. Tap ⋮ → "Add to Home Screen" or "Install App"<br>
-      3. Runs as a PWA on your home screen<br><br>
-      <b style="color:var(--g2)">Option C — Run it on a free server:</b><br>
-      1. Upload to GitHub Pages (free)<br>
-      2. Bot runs 24/7 even when your phone is off<br>
-      3. Ask Claude to help set this up when ready
-    </div>
+  <div style="padding:14px 0;font-family:var(--mono);font-size:9px;color:var(--muted);line-height:1.6">
+    Year 1: ~$9,450 · Year 2: ~$37,800 · Year 3: ~$75,600 · Year 4: ~$113,400 · Year 5: ~$151,200
   </div>`;
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// CONTROLS
-// ═══════════════════════════════════════════════════════════════════
-function toggleBot(){
-  if(state.propFailed){alert("Prop challenge failed. Reset first.");return;}
-  state.running=!state.running;
-  if(state.running){botInterval=setInterval(tick,1500);}
-  else{clearInterval(botInterval);}
-  renderContent();
-}
-function resetBot(){
-  if(!confirm("Reset all trading data?"))return;
-  clearInterval(botInterval);
-  state={...state,running:false,tick:0,balance:STARTING,holdings:{},costBasis:{},entryStrat:{},totalValue:STARTING,peakValue:STARTING,equityCurve:[STARTING],winCount:0,lossCount:0,trades:[],phase:"PAPER",riskLevel:1.0,stratWeights:Object.fromEntries(STRATS.map(s=>[s,1.0])),stratPnL:Object.fromEntries(STRATS.map(s=>[s,0])),regime:"ANALYZING",aiInsight:null,journalEntries:[],mcResults:null,prices:Object.fromEntries(ASSETS.map(a=>[a.id,[a.base]])),propStartBalance:STARTING,propDayStart:STARTING,propDailyLoss:0,propTradingDays:0,propLastDay:-1,propPhase:1,propPassed:false,propFailed:false,propFailReason:"",dailyReturns:[],lastDayValue:STARTING};
-  renderContent();
-}
-function resetProp(){
-  state.propStartBalance=state.totalValue;state.propDayStart=state.totalValue;
-  state.propDailyLoss=0;state.propTradingDays=0;state.propLastDay=-1;
-  state.propPhase=1;state.propPassed=false;state.propFailed=false;state.propFailReason="";
-  addJournal("🔄 Prop challenge reset. Starting fresh.","info");
-  renderContent();
-}
-function switchTab(t){
-  state.activeTab=t;
-  // Update tab bar scroll
-  const tabs=document.getElementById("tabs");
-  const tNames=["dashboard","assets","prop","strategies","ai","backtest","journal","roadmap"];
-  const idx=tNames.indexOf(t);
-  if(idx>=0&&tabs.children[idx])tabs.children[idx].scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});
-  renderContent();
+// ═══════════════════════════════════════════════
+// NAVIGATION & INIT
+// ═══════════════════════════════════════════════
+function switchTab(t) {
+  state.activeTab = t;
+  render();
+  document.getElementById("content").scrollTop = 0;
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════════════════
-renderContent();
-// Initial AI call after short delay
-setTimeout(callAI, 2000);
+// Auto-refresh every 5 minutes
+setInterval(() => { loadData(); }, 5 * 60 * 1000);
+
+// Initial load
+loadData();
 </script>
 </body>
 </html>
