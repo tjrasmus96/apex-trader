@@ -5,667 +5,831 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="theme-color" content="#020407"/>
+<meta name="theme-color" content="#080f0a"/>
 <title>APEX TRADER</title>
-<link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;600;800&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#020407;--bg2:#060c12;--bg3:#0a1520;
-  --g1:#00e5ff;--g2:#00ff9d;--g3:#ffcc00;
-  --danger:#ff2d55;--purple:#bf5fff;
-  --border:rgba(0,229,255,0.1);--border2:rgba(0,229,255,0.2);
-  --text:#c8d8e8;--muted:#3a5060;
-  --mono:'JetBrains Mono',monospace;--display:'Oxanium',sans-serif;
+  --bg:#080f0a;--bg2:#0d1a10;--bg3:#111f14;--bg4:#162419;
+  --green:#1aff6e;--green2:#0dcc58;--green3:#a8ffca;
+  --gold:#ffd166;--red:#ff4757;--blue:#54a0ff;--purple:#a29bfe;
+  --white:#e8f5ec;--muted:#3a6645;--border:rgba(26,255,110,0.12);
+  --border2:rgba(26,255,110,0.25);
+  --mono:'IBM Plex Mono',monospace;--sans:'Syne',sans-serif;
 }
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--display);overflow:hidden;}
-#app{display:flex;flex-direction:column;height:100vh;height:100dvh;position:relative;}
+html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--sans);overflow:hidden;}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;}
 
-/* scanline overlay */
-#app::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,229,255,0.015) 3px);pointer-events:none;z-index:100;}
+/* subtle grid bg */
+body::before{content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(26,255,110,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(26,255,110,0.03) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none;z-index:0;}
 
 /* HEADER */
 #hdr{
-  padding:10px 14px 8px;flex-shrink:0;
-  background:linear-gradient(180deg,rgba(0,229,255,0.06) 0%,transparent 100%);
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px 8px;flex-shrink:0;position:relative;z-index:10;
+  background:linear-gradient(180deg,rgba(26,255,110,0.08) 0%,transparent 100%);
+  border-bottom:1px solid var(--border2);
 }
-.logo{font-size:20px;font-weight:800;letter-spacing:3px;
-  background:linear-gradient(90deg,var(--g1),var(--g2));
+.hdr-inner{display:flex;align-items:center;justify-content:space-between;}
+.logo-area{display:flex;flex-direction:column;}
+.logo-eyebrow{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:3px;margin-bottom:2px;}
+.logo{font-size:22px;font-weight:800;letter-spacing:2px;
+  background:linear-gradient(90deg,var(--green),var(--green3));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.status-dot{width:8px;height:8px;border-radius:50%;background:var(--g2);
-  box-shadow:0 0 8px var(--g2);animation:blink 2s infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
 .hdr-right{display:flex;align-items:center;gap:8px;}
-.badge{padding:2px 8px;border-radius:3px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1px;}
-.badge-cyan{background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);color:var(--g1);}
-.badge-green{background:rgba(0,255,157,0.1);border:1px solid rgba(0,255,157,0.3);color:var(--g2);}
-.badge-gold{background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.3);color:var(--g3);}
-.badge-red{background:rgba(255,45,85,0.1);border:1px solid rgba(255,45,85,0.3);color:var(--danger);}
+.live-pill{display:flex;align-items:center;gap:5px;padding:3px 8px;border-radius:20px;
+  background:rgba(26,255,110,0.1);border:1px solid var(--border2);
+  font-family:var(--mono);font-size:9px;color:var(--green);}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.time-pill{padding:3px 8px;border-radius:20px;background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);font-family:var(--mono);font-size:9px;color:var(--muted);}
+
+/* MODE TOGGLE */
+.mode-toggle{display:flex;gap:0;background:var(--bg2);border:1px solid var(--border);
+  border-radius:6px;overflow:hidden;margin-top:8px;}
+.mode-btn{flex:1;padding:5px 8px;font-family:var(--mono);font-size:9px;letter-spacing:1px;
+  text-align:center;cursor:pointer;color:var(--muted);transition:all 0.2s;}
+.mode-btn.active{background:rgba(26,255,110,0.15);color:var(--green);}
 
 /* TABS */
-#tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
+#tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;
+  overflow-x:auto;scrollbar-width:none;position:relative;z-index:10;}
 #tabs::-webkit-scrollbar{display:none;}
-.tab{padding:9px 16px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;white-space:nowrap;
-  cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);transition:all 0.2s;flex-shrink:0;}
-.tab.active{color:var(--g1);border-bottom-color:var(--g1);}
+.tab{padding:9px 14px;font-family:var(--mono);font-size:9px;letter-spacing:1.5px;
+  white-space:nowrap;cursor:pointer;border-bottom:2px solid transparent;
+  color:var(--muted);transition:all 0.2s;flex-shrink:0;}
+.tab.active{color:var(--green);border-bottom-color:var(--green);}
 
 /* CONTENT */
-#content{flex:1;overflow-y:auto;padding:12px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+#content{flex:1;overflow-y:auto;padding:12px;scrollbar-width:thin;
+  scrollbar-color:var(--border) transparent;position:relative;z-index:10;}
 #content::-webkit-scrollbar{width:2px;}
 #content::-webkit-scrollbar-thumb{background:var(--border);}
 
 /* CARDS */
-.card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:13px;margin-bottom:10px;position:relative;overflow:hidden;}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--g1),transparent);opacity:0.3;}
-.card-cyan{border-color:rgba(0,229,255,0.25);}
-.card-green{border-color:rgba(0,255,157,0.25);}
-.card-gold{border-color:rgba(255,204,0,0.25);}
-.card-red{border-color:rgba(255,45,85,0.25);}
-.lbl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:2px;margin-bottom:5px;text-transform:uppercase;}
-.val{font-size:24px;font-weight:800;line-height:1;}
-.sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;}
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+  padding:14px;margin-bottom:10px;position:relative;overflow:hidden;}
+.card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--green),transparent);opacity:0.3;}
+.card-green{border-color:rgba(26,255,110,0.3);}
+.card-gold{border-color:rgba(255,209,102,0.3);}
+.card-red{border-color:rgba(255,71,87,0.3);}
+.card-blue{border-color:rgba(84,160,255,0.3);}
+
+/* LEARN TOOLTIP */
+.learn-wrap{position:relative;display:inline-block;}
+.learn-icon{display:inline-flex;align-items:center;justify-content:center;
+  width:14px;height:14px;border-radius:50%;background:rgba(26,255,110,0.15);
+  border:1px solid var(--border2);font-family:var(--mono);font-size:8px;
+  color:var(--green);cursor:pointer;margin-left:4px;vertical-align:middle;}
+.tooltip{display:none;position:absolute;bottom:120%;left:50%;transform:translateX(-50%);
+  background:var(--bg4);border:1px solid var(--border2);border-radius:8px;
+  padding:10px 12px;font-family:var(--mono);font-size:10px;color:var(--green3);
+  line-height:1.5;width:220px;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,0.5);}
+.tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  border:5px solid transparent;border-top-color:var(--border2);}
+.learn-wrap:hover .tooltip,.learn-wrap:focus .tooltip{display:block;}
+
+/* LEARN BOX */
+.learn-box{background:rgba(26,255,110,0.05);border:1px solid rgba(26,255,110,0.2);
+  border-radius:8px;padding:10px 12px;margin-top:8px;
+  font-family:var(--mono);font-size:10px;color:var(--green3);line-height:1.6;}
+.learn-label{font-size:8px;letter-spacing:2px;color:var(--green);margin-bottom:4px;
+  display:flex;align-items:center;gap:4px;}
+
+/* STAT GRID */
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
-
-/* SPARKLINE */
-canvas{display:block;width:100%;border-radius:4px;}
+.stat-box{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px;}
+.stat-lbl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:2px;
+  margin-bottom:4px;display:flex;align-items:center;}
+.stat-val{font-size:20px;font-weight:800;line-height:1;}
+.stat-sub{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px;}
 
 /* PROGRESS */
-.pbar{height:4px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;margin-top:6px;}
-.pfill{height:100%;border-radius:2px;transition:width 1s ease;}
+.pbar{height:5px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;margin-top:6px;}
+.pfill{height:100%;border-radius:3px;transition:width 1.2s ease;}
 
-/* BOT CARD */
-.bot-card{background:var(--bg2);border-radius:8px;padding:11px;margin-bottom:8px;
-  border:1px solid var(--border);transition:border-color 0.3s;}
-.bot-name{font-size:13px;font-weight:800;letter-spacing:2px;margin-bottom:2px;}
-.bot-status{font-family:var(--mono);font-size:9px;color:var(--muted);}
+/* SPARKLINE */
+canvas{display:block;width:100%;}
 
 /* TRADE ROW */
-.tr{padding:8px 0;border-bottom:1px solid rgba(0,229,255,0.06);
-  display:flex;justify-content:space-between;align-items:flex-start;}
-.tr-coin{font-size:12px;font-weight:700;letter-spacing:1px;}
-.tr-action{font-family:var(--mono);font-size:9px;font-weight:700;}
-.tr-reason{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px;}
-.tr-val{font-family:var(--mono);font-size:11px;text-align:right;}
-.tr-pnl{font-family:var(--mono);font-size:10px;text-align:right;margin-top:1px;}
+.tr{padding:10px 0;border-bottom:1px solid rgba(26,255,110,0.06);}
+.tr-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.tr-coin{font-size:16px;font-weight:800;letter-spacing:1px;}
+.tr-action{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1px;
+  padding:2px 6px;border-radius:3px;}
+.tr-buy{background:rgba(26,255,110,0.15);color:var(--green);}
+.tr-sell{background:rgba(255,71,87,0.15);color:var(--red);}
+.tr-reason{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px;}
+.tr-plain{font-size:11px;color:var(--green3);margin-top:4px;line-height:1.4;}
+.tr-val{font-family:var(--mono);font-size:12px;text-align:right;}
+.tr-pnl{font-family:var(--mono);font-size:11px;font-weight:700;text-align:right;margin-top:2px;}
+
+/* BOT CARD */
+.bot-card{background:var(--bg2);border-radius:8px;padding:12px;margin-bottom:8px;
+  border:1px solid var(--border);}
+.bot-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.bot-name{font-size:15px;font-weight:800;letter-spacing:1px;}
+.bot-strategy{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px;}
+.bot-explain{font-size:11px;color:var(--green3);line-height:1.5;margin-top:6px;
+  padding:8px;background:rgba(26,255,110,0.04);border-radius:6px;}
+
+/* GLOSSARY */
+.gloss-item{padding:12px 0;border-bottom:1px solid var(--border);}
+.gloss-term{font-size:15px;font-weight:700;color:var(--green);margin-bottom:4px;}
+.gloss-def{font-family:var(--mono);font-size:10px;color:var(--white);line-height:1.6;}
+.gloss-example{font-family:var(--mono);font-size:9px;color:var(--muted);
+  margin-top:6px;padding:6px 8px;background:var(--bg2);border-radius:4px;}
+
+/* LOG */
+.log-item{padding:10px 0;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start;}
+.log-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:12px;flex-shrink:0;margin-top:2px;}
+.log-win{background:rgba(26,255,110,0.15);border:1px solid rgba(26,255,110,0.3);}
+.log-loss{background:rgba(255,71,87,0.15);border:1px solid rgba(255,71,87,0.3);}
+.log-buy{background:rgba(84,160,255,0.15);border:1px solid rgba(84,160,255,0.3);}
+.log-title{font-size:13px;font-weight:700;}
+.log-detail{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px;line-height:1.5;}
+.log-lesson{font-family:var(--mono);font-size:10px;color:var(--green3);margin-top:4px;
+  padding:5px 8px;background:rgba(26,255,110,0.05);border-radius:4px;}
+
+/* ROADMAP */
+.rm-step{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.rm-num{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;
+  align-items:center;justify-content:center;font-weight:800;font-size:12px;}
+.rm-done{background:rgba(26,255,110,0.2);border:1px solid var(--green);color:var(--green);}
+.rm-next{background:rgba(255,209,102,0.15);border:1px solid var(--gold);color:var(--gold);}
+.rm-future{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);}
+.rm-title{font-size:13px;font-weight:700;margin-bottom:4px;}
+.rm-desc{font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.5;}
 
 /* BOTTOM NAV */
 #bnav{display:flex;border-top:1px solid var(--border);flex-shrink:0;
-  background:var(--bg);padding:6px 0 max(6px,env(safe-area-inset-bottom));}
+  background:var(--bg);padding:5px 0 max(5px,env(safe-area-inset-bottom));
+  position:relative;z-index:10;}
 .bn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
-  padding:5px;cursor:pointer;color:var(--muted);font-family:var(--mono);font-size:8px;
+  padding:4px;cursor:pointer;color:var(--muted);font-family:var(--mono);font-size:7px;
   letter-spacing:0.5px;transition:color 0.2s;}
-.bn.active{color:var(--g1);}
-.bn-icon{font-size:17px;line-height:1;}
-
-/* PULSE ANIMATION */
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,255,157,0.4)}50%{box-shadow:0 0 0 6px rgba(0,255,157,0)}}
+.bn.active{color:var(--green);}
+.bn-icon{font-size:16px;line-height:1;}
 
 /* LOADING */
 .loading{text-align:center;padding:40px 20px;color:var(--muted);font-family:var(--mono);font-size:11px;}
-.spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--g1);
+.spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--green);
   border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* REPORT */
-.report-box{padding:12px;background:rgba(0,229,255,0.04);border-radius:8px;
-  border:1px solid rgba(0,229,255,0.15);font-size:12px;line-height:1.7;color:#aab;}
+/* SECTION HEADER */
+.sec-hdr{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:3px;
+  margin-bottom:8px;text-transform:uppercase;display:flex;align-items:center;gap:6px;}
+.sec-hdr::after{content:'';flex:1;height:1px;background:var(--border);}
 </style>
 </head>
 <body>
 <div id="app">
   <div id="hdr">
-    <div>
-      <div style="font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:3px;margin-bottom:2px">LIVE TRADING SYSTEM</div>
-      <div class="logo">APEX TRADER</div>
+    <div class="hdr-inner">
+      <div class="logo-area">
+        <div class="logo-eyebrow">AUTONOMOUS TRADING SYSTEM</div>
+        <div class="logo">APEX TRADER</div>
+      </div>
+      <div class="hdr-right">
+        <div class="live-pill"><div class="live-dot"></div>LIVE</div>
+        <div class="time-pill" id="timeLbl">--:--</div>
+      </div>
     </div>
-    <div class="hdr-right">
-      <span class="status-dot"></span>
-      <span class="badge badge-green" id="modeBadge">PAPER</span>
-      <span class="badge badge-cyan" id="lastUpdate">--:--</span>
+    <div class="mode-toggle">
+      <div class="mode-btn active" id="modeSimple" onclick="setMode('simple')">📚 SIMPLE MODE</div>
+      <div class="mode-btn" id="modeAdv" onclick="setMode('advanced')">⚡ ADVANCED</div>
     </div>
   </div>
 
   <div id="tabs">
-    <div class="tab active" onclick="switchTab('dashboard')">DASHBOARD</div>
-    <div class="tab" onclick="switchTab('bots')">BOTS</div>
+    <div class="tab active" onclick="switchTab('dash')">DASHBOARD</div>
+    <div class="tab" onclick="switchTab('bots')">MY BOTS</div>
     <div class="tab" onclick="switchTab('trades')">TRADES</div>
-    <div class="tab" onclick="switchTab('report')">REPORT</div>
+    <div class="tab" onclick="switchTab('log')">JOURNAL</div>
+    <div class="tab" onclick="switchTab('learn')">LEARN</div>
     <div class="tab" onclick="switchTab('roadmap')">ROADMAP</div>
   </div>
 
   <div id="content"></div>
 
   <div id="bnav">
-    <div class="bn active" onclick="switchTab('dashboard')"><div class="bn-icon">📊</div>DASH</div>
+    <div class="bn active" onclick="switchTab('dash')"><div class="bn-icon">📊</div>DASH</div>
     <div class="bn" onclick="switchTab('bots')"><div class="bn-icon">🤖</div>BOTS</div>
     <div class="bn" onclick="switchTab('trades')"><div class="bn-icon">💹</div>TRADES</div>
-    <div class="bn" onclick="switchTab('report')"><div class="bn-icon">🧠</div>AI</div>
-    <div class="bn" onclick="switchTab('roadmap')"><div class="bn-icon">🗺</div>MAP</div>
+    <div class="bn" onclick="switchTab('log')"><div class="bn-icon">📓</div>JOURNAL</div>
+    <div class="bn" onclick="switchTab('learn')"><div class="bn-icon">📚</div>LEARN</div>
+    <div class="bn" onclick="switchTab('roadmap')"><div class="bn-icon">🗺</div>GOAL</div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════
-// CONFIG — Your Supabase credentials
-// ═══════════════════════════════════════════════
-const SUPABASE_URL = "https://npuqacqhodsharmhrtce.supabase.co";
-const SUPABASE_KEY = "sb_publishable_ZXbzIWVZgTIGydS79NrYoQ_MvxvX-LI"; // Replace with your sb_publishable_ key
+const SB_URL = "https://npuqacqhodsharmhrtce.supabase.co";
+const SB_KEY = "sb_publishable_ZXbzIWVZgTIGydS79NrYoQ_MvxvX-LI";
+const BOTS = ["BOT1_MOMENTUM","BOT2_MEAN_REV","BOT3_TREND"];
+const BOT_NAMES = {BOT1_MOMENTUM:"Momentum Bot",BOT2_MEAN_REV:"Mean Reversion Bot",BOT3_TREND:"Trend Bot"};
+const BOT_COLORS = {BOT1_MOMENTUM:"#1aff6e",BOT2_MEAN_REV:"#54a0ff",BOT3_TREND:"#ffd166"};
+const START_TOTAL = 300000; // $100k per bot × 3
+const GOAL_YEAR1 = 150000; // $150k/year income goal
 
-const BOT_IDS = ["BOT1_MOMENTUM","BOT2_MEAN_REV","BOT3_TREND"];
-const BOT_NAMES = {BOT1_MOMENTUM:"MOMENTUM",BOT2_MEAN_REV:"MEAN REV",BOT3_TREND:"TREND"};
-const BOT_COLORS = {BOT1_MOMENTUM:"#00e5ff",BOT2_MEAN_REV:"#00ff9d",BOT3_TREND:"#ffcc00"};
-const STARTING = 200;
-const GOAL = 25000;
+let state = {tab:"dash", mode:"simple", trades:[], equity:{}, stats:{}, weights:{}, report:null, loading:true};
 
-// ═══════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════
-let state = {
-  activeTab:"dashboard",
-  trades:[],
-  equity:{},
-  stats:{},
-  weights:{},
-  report:null,
-  loading:true,
-  lastFetch:null,
-};
-
-// ═══════════════════════════════════════════════
-// SUPABASE FETCH
-// ═══════════════════════════════════════════════
 async function sbFetch(table, params="") {
-  const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, {
-    headers:{
-      "apikey": SUPABASE_KEY,
-      "Authorization": `Bearer ${SUPABASE_KEY}`,
-      "Content-Type": "application/json"
-    }
+  const r = await fetch(`${SB_URL}/rest/v1/${table}?${params}`, {
+    headers:{"apikey":SB_KEY,"Authorization":`Bearer ${SB_KEY}`}
   });
-  if (!r.ok) throw new Error(`${table}: ${r.status}`);
+  if (!r.ok) throw new Error(r.status);
   return r.json();
 }
 
 async function loadData() {
   try {
-    // Trades
-    const trades = await sbFetch("trades", "order=timestamp.desc&limit=100");
-    state.trades = trades || [];
-
-    // Equity history per bot
-    for (const bot of BOT_IDS) {
-      const eq = await sbFetch("equity_history",
-        `bot_id=eq.${bot}&order=timestamp.desc&limit=100`);
-      state.equity[bot] = (eq || []).reverse();
+    state.trades = await sbFetch("trades","order=timestamp.desc&limit=200") || [];
+    for (const b of BOTS) {
+      const eq = await sbFetch("equity_history",`bot_id=eq.${b}&order=timestamp.desc&limit=100`);
+      state.equity[b] = (eq||[]).reverse();
+      const s = await sbFetch("bot_stats",`bot_id=eq.${b}`);
+      state.stats[b] = s?.[0] || {wins:0,losses:0,peak_equity:100000};
+      const w = await sbFetch("strategy_weights",`bot_id=eq.${b}`);
+      state.weights[b] = w?.[0]?.weights || {};
     }
-
-    // Bot stats
-    for (const bot of BOT_IDS) {
-      const s = await sbFetch("bot_stats", `bot_id=eq.${bot}`);
-      state.stats[bot] = s && s[0] ? s[0] : {wins:0,losses:0,peak_equity:STARTING};
-    }
-
-    // Strategy weights
-    for (const bot of BOT_IDS) {
-      const w = await sbFetch("strategy_weights", `bot_id=eq.${bot}`);
-      state.weights[bot] = w && w[0] ? w[0].weights : {};
-    }
-
-    // Latest report
-    const reports = await sbFetch("reports", "order=timestamp.desc&limit=1");
-    state.report = reports && reports[0] ? reports[0] : null;
-
+    const rep = await sbFetch("reports","order=timestamp.desc&limit=1");
+    state.report = rep?.[0] || null;
     state.loading = false;
-    state.lastFetch = new Date();
-    document.getElementById("lastUpdate").textContent =
-      state.lastFetch.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
     render();
   } catch(e) {
-    console.error("Load error:", e);
-    state.loading = false;
-    state.error = e.message;
-    render();
+    state.loading = false; render();
   }
 }
-
-// ═══════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════
-function fmtUSD(n) {
-  const abs = Math.abs(n);
-  const s = abs >= 1000 ? `$${(abs/1000).toFixed(2)}K` :
-            `$${abs.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}`;
-  return n < 0 ? `-${s}` : s;
-}
-function pct(n) { return `${n>=0?"+":""}${n.toFixed(2)}%`; }
 
 function totalEquity() {
-  let total = 0;
-  for (const bot of BOT_IDS) {
-    const eq = state.equity[bot];
-    if (eq && eq.length > 0) total += eq[eq.length-1].equity;
+  let t = 0;
+  for (const b of BOTS) {
+    const eq = state.equity[b];
+    t += eq?.length > 0 ? eq[eq.length-1].equity : 100000;
   }
-  return total || STARTING * BOT_IDS.length;
+  return t;
 }
 
-function combinedCurve() {
-  // Get max length
-  const maxLen = Math.max(...BOT_IDS.map(b => (state.equity[b]||[]).length));
-  if (maxLen === 0) return [STARTING * BOT_IDS.length];
-  const combined = [];
-  for (let i = 0; i < maxLen; i++) {
-    let sum = 0;
-    for (const bot of BOT_IDS) {
-      const eq = state.equity[bot] || [];
-      const idx = Math.round(i * (eq.length-1) / (maxLen-1));
-      sum += eq[idx] ? eq[idx].equity : STARTING;
-    }
-    combined.push(sum);
-  }
-  return combined;
+function fmtUSD(n, dec=2) {
+  const abs = Math.abs(n);
+  const s = abs >= 1000000 ? `$${(abs/1000000).toFixed(2)}M` :
+            abs >= 1000 ? `$${(abs/1000).toFixed(1)}K` :
+            `$${abs.toFixed(dec)}`;
+  return n < 0 ? `-${s}` : s;
 }
 
-function drawSpark(id, data, upColor="#00e5ff") {
+function pct(n) { return `${n>=0?"+":""}${n.toFixed(2)}%`; }
+
+function plainEnglishTrade(trade) {
+  const action = trade.action === "BUY" ? "bought" : "sold";
+  const sym = trade.symbol?.replace("/USD","");
+  const reason = trade.reason || "";
+  let plain = `The bot ${action} ${sym}`;
+  if (reason.includes("RSI") && reason.includes("oversold")) plain += " because it was deeply oversold — meaning too many people sold it recently and a bounce was likely.";
+  else if (reason.includes("Bullish EMA")) plain += " because multiple moving averages lined up pointing upward — a classic buy signal.";
+  else if (reason.includes("Fear")) plain += " because the market Fear & Greed Index showed extreme fear — historically a good time to buy.";
+  else if (reason.includes("BB lower")) plain += " because the price dropped below its normal range (Bollinger Band) — suggesting it may bounce back.";
+  else if (reason.includes("stop-loss")) plain += " automatically to protect from further losses — this is risk management working correctly.";
+  else plain += " based on multiple technical signals agreeing.";
+  return plain;
+}
+
+function learnWrap(term, tip) {
+  return `<span class="learn-wrap"><span class="learn-icon" tabindex="0">?</span><span class="tooltip">${tip}</span></span>`;
+}
+
+function drawSpark(id, data, color) {
   setTimeout(() => {
     const c = document.getElementById(id);
     if (!c || data.length < 2) return;
-    const W = c.offsetWidth || 300, H = c.height || 48;
+    const W = c.offsetWidth||300, H = c.height||48;
     c.width = W;
     const ctx = c.getContext("2d");
     ctx.clearRect(0,0,W,H);
     const mn = Math.min(...data), mx = Math.max(...data), rng = mx-mn||1;
     const up = data[data.length-1] >= data[0];
-    const color = up ? upColor : "#ff2d55";
-    // gradient fill
+    const col = up ? color : "#ff4757";
     const grad = ctx.createLinearGradient(0,0,0,H);
-    grad.addColorStop(0, color + "33");
-    grad.addColorStop(1, color + "00");
+    grad.addColorStop(0, col+"40"); grad.addColorStop(1, col+"00");
     ctx.beginPath();
-    data.forEach((p,i) => {
-      const x = (i/(data.length-1))*W;
-      const y = H - ((p-mn)/rng)*(H-4) - 2;
-      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
-    });
-    ctx.lineTo(W, H); ctx.lineTo(0, H);
-    ctx.closePath();
-    ctx.fillStyle = grad;
-    ctx.fill();
-    // line
+    data.forEach((p,i)=>{const x=(i/(data.length-1))*W,y=H-((p-mn)/rng)*(H-4)-2;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});
+    ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fillStyle=grad;ctx.fill();
     ctx.beginPath();
-    data.forEach((p,i) => {
-      const x = (i/(data.length-1))*W;
-      const y = H - ((p-mn)/rng)*(H-4) - 2;
-      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
-    });
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 1.5;
-    ctx.lineJoin = "round";
-    ctx.stroke();
-  }, 60);
+    data.forEach((p,i)=>{const x=(i/(data.length-1))*W,y=H-((p-mn)/rng)*(H-4)-2;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});
+    ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.lineJoin="round";ctx.stroke();
+  },60);
 }
 
-// ═══════════════════════════════════════════════
-// RENDER
-// ═══════════════════════════════════════════════
-function render() {
-  updateNav();
-  const c = document.getElementById("content");
-  if (state.loading) {
-    c.innerHTML = `<div class="loading"><div class="spinner"></div>Loading live data from Supabase...</div>`;
-    return;
-  }
-  if (state.error && state.trades.length === 0) {
-    c.innerHTML = `<div class="card card-red">
-      <div class="lbl">CONNECTION ERROR</div>
-      <div style="font-family:var(--mono);font-size:11px;color:#ff2d55;margin-bottom:8px">${state.error}</div>
-      <div style="font-family:var(--mono);font-size:10px;color:var(--muted)">
-        Make sure your Supabase key is set in the app and your bots have run at least once.
-        <br><br>Check GitHub Actions for errors.
-      </div>
-    </div>`;
-    return;
-  }
-  switch(state.activeTab) {
-    case "dashboard": c.innerHTML = renderDashboard(); break;
-    case "bots":      c.innerHTML = renderBots();      break;
-    case "trades":    c.innerHTML = renderTrades();    break;
-    case "report":    c.innerHTML = renderReport();    break;
-    case "roadmap":   c.innerHTML = renderRoadmap();   break;
-  }
-  // Draw sparklines after render
-  const curve = combinedCurve();
-  if (curve.length > 1) drawSpark("spark-main", curve, "#00e5ff");
-  for (const bot of BOT_IDS) {
-    const eq = (state.equity[bot]||[]).map(e=>e.equity);
-    if (eq.length > 1) drawSpark(`spark-${bot}`, eq, BOT_COLORS[bot]);
-  }
+function setMode(m) {
+  state.mode = m;
+  document.getElementById("modeSimple").classList.toggle("active", m==="simple");
+  document.getElementById("modeAdv").classList.toggle("active", m==="advanced");
+  render();
 }
 
-function updateNav() {
-  document.querySelectorAll(".tab").forEach((t,i) => {
-    const names = ["dashboard","bots","trades","report","roadmap"];
-    t.classList.toggle("active", names[i]===state.activeTab);
-  });
-  document.querySelectorAll(".bn").forEach((b,i) => {
-    const names = ["dashboard","bots","trades","report","roadmap"];
-    b.classList.toggle("active", names[i]===state.activeTab);
-  });
-}
-
-// ── DASHBOARD ──────────────────────────────────
-function renderDashboard() {
+// ═══════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════
+function renderDash() {
   const total = totalEquity();
-  const startTotal = STARTING * BOT_IDS.length;
-  const pnl = total - startTotal;
-  const pnlP = pnl / startTotal * 100;
-  const goalPct = Math.min(total / GOAL * 100, 100);
-  const pnlColor = pnl >= 0 ? "var(--g2)" : "var(--danger)";
+  const pnl = total - START_TOTAL;
+  const pnlP = pnl / START_TOTAL * 100;
+  const isSimple = state.mode === "simple";
 
-  let allWins = 0, allLosses = 0;
-  for (const bot of BOT_IDS) {
-    allWins += state.stats[bot]?.wins || 0;
-    allLosses += state.stats[bot]?.losses || 0;
-  }
-  const totalTrades = allWins + allLosses;
-  const wr = totalTrades > 0 ? allWins/totalTrades*100 : 0;
+  const sells = state.trades.filter(t=>t.action==="SELL");
+  const wins = sells.filter(t=>(t.profit||0)>0);
+  const totalPnL = sells.reduce((s,t)=>s+(t.profit||0),0);
+  let allW=0,allL=0;
+  for(const b of BOTS){allW+=state.stats[b]?.wins||0;allL+=state.stats[b]?.losses||0;}
+  const tt=allW+allL, wr=tt>0?allW/tt*100:0;
 
-  const allSells = state.trades.filter(t=>t.action==="SELL");
-  const totalPnL = allSells.reduce((s,t)=>s+(t.profit||0),0);
+  // Goal: $150k/year from prop firms. Need funded account track record.
+  // Paper trading $300K → prove strategy → get funded
+  const monthlyPnL = totalPnL; // total so far
+  const annualizedRate = pnlP * (365/Math.max(1, daysSinceStart()));
+  const propGoalPct = Math.min(Math.max(pnlP, 0) / 10 * 100, 100); // 10% paper target before applying
 
   return `
-  <div class="card card-cyan">
-    <div class="lbl">TOTAL PORTFOLIO</div>
-    <div class="val" style="color:${pnlColor}">${fmtUSD(total)}</div>
-    <div class="sub" style="color:${pnlColor}">${pct(pnlP)} · ${pnl>=0?"+":""}${fmtUSD(pnl)} total P&L</div>
-    <canvas id="spark-main" height="48" style="margin-top:10px"></canvas>
-    <div class="pbar">
-      <div class="pfill" style="width:${goalPct}%;background:linear-gradient(90deg,var(--g1),var(--g2))"></div>
+  <div class="card card-green">
+    <div class="sec-hdr">PORTFOLIO VALUE</div>
+    <div style="font-size:32px;font-weight:800;color:${pnl>=0?"var(--green)":"var(--red)"};line-height:1">${fmtUSD(total)}</div>
+    <div style="font-family:var(--mono);font-size:11px;color:${pnl>=0?"var(--green)":"var(--red)"};margin-top:4px">
+      ${pct(pnlP)} · ${pnl>=0?"+":""}${fmtUSD(pnl)} total change
     </div>
-    <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:3px">
-      <span>$${startTotal} START</span><span>${goalPct.toFixed(1)}% → $${GOAL.toLocaleString()} GOAL</span>
+    ${isSimple?`<div class="learn-box"><div class="learn-label">💡 WHAT THIS MEANS</div>
+    This is the total value of all 3 bots combined. You started with $300,000 in paper (fake) money spread across 3 bots. 
+    Paper money lets you test strategies with zero real risk. When results are good, you'll apply to a prop firm to trade with their real money.
+    </div>`:""}
+    <canvas id="spark-total" height="48" style="margin-top:10px"></canvas>
+    <div style="margin-top:8px">
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:4px">
+        <span>PROP CHALLENGE PROGRESS</span>
+        <span>${propGoalPct.toFixed(1)}% of 10% target</span>
+      </div>
+      <div class="pbar">
+        <div class="pfill" style="width:${propGoalPct}%;background:linear-gradient(90deg,var(--green),var(--green3))"></div>
+      </div>
+      ${isSimple?`<div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px">
+        Hit +10% profit to qualify for prop firm application → get funded with $50K-$300K real money
+      </div>`:""}
     </div>
   </div>
 
   <div class="g2">
-    <div class="card">
-      <div class="lbl">WIN RATE</div>
-      <div class="val" style="font-size:26px;color:${wr>=55?"var(--g2)":wr>=45?"var(--g3)":"var(--danger)"}">${wr.toFixed(0)}%</div>
-      <div class="sub">${allWins}W · ${allLosses}L · ${totalTrades} total</div>
+    <div class="stat-box">
+      <div class="stat-lbl">WIN RATE ${learnWrap("wr","Win Rate = the % of closed trades that made money. Above 50% is good. Above 60% is excellent.")}</div>
+      <div class="stat-val" style="color:${wr>=55?"var(--green)":wr>=45?"var(--gold)":"var(--red)"}">${wr.toFixed(0)}%</div>
+      <div class="stat-sub">${allW}W · ${allL}L · ${tt} total</div>
     </div>
-    <div class="card">
-      <div class="lbl">REALIZED P&L</div>
-      <div class="val" style="font-size:22px;color:${totalPnL>=0?"var(--g2)":"var(--danger)"}">${totalPnL>=0?"+":""}${fmtUSD(totalPnL)}</div>
-      <div class="sub">${allSells.length} closed trades</div>
+    <div class="stat-box">
+      <div class="stat-lbl">REALIZED P&L ${learnWrap("pnl","Realized P&L = actual profit/loss from trades that are already closed. Open positions don't count until sold.")}</div>
+      <div class="stat-val" style="font-size:18px;color:${totalPnL>=0?"var(--green)":"var(--red)"}">${totalPnL>=0?"+":""}${fmtUSD(totalPnL)}</div>
+      <div class="stat-sub">${sells.length} closed trades</div>
     </div>
   </div>
 
   <div class="card">
-    <div class="lbl">3 BOTS — LIVE STATUS</div>
-    ${BOT_IDS.map(bot=>{
-      const eq = state.equity[bot]||[];
-      const cur = eq.length > 0 ? eq[eq.length-1].equity : STARTING;
-      const prev = eq.length > 1 ? eq[eq.length-2].equity : STARTING;
+    <div class="sec-hdr">3 BOTS STATUS</div>
+    ${BOTS.map(b=>{
+      const eq = state.equity[b]||[];
+      const cur = eq.length>0?eq[eq.length-1].equity:100000;
+      const prev = eq.length>1?eq[eq.length-2].equity:100000;
       const chg = (cur-prev)/prev*100;
-      const color = BOT_COLORS[bot];
-      const trades = state.trades.filter(t=>t.bot_id===bot);
+      const c = BOT_COLORS[b];
+      const bTrades = state.trades.filter(t=>t.bot_id===b);
       return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
         <div style="display:flex;align-items:center;gap:8px">
-          <div style="width:8px;height:8px;border-radius:50%;background:${color};box-shadow:0 0 6px ${color}"></div>
+          <div style="width:8px;height:8px;border-radius:50%;background:${c};box-shadow:0 0 6px ${c}"></div>
           <div>
-            <div style="font-size:11px;font-weight:700;color:${color};letter-spacing:1px">${BOT_NAMES[bot]}</div>
-            <div style="font-family:var(--mono);font-size:9px;color:var(--muted)">${trades.length} trades logged</div>
+            <div style="font-size:13px;font-weight:700;color:${c}">${BOT_NAMES[b]}</div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--muted)">${bTrades.length} trades logged</div>
           </div>
         </div>
         <div style="text-align:right">
-          <div style="font-family:var(--mono);font-size:12px;font-weight:700">${fmtUSD(cur)}</div>
-          <div style="font-family:var(--mono);font-size:9px;color:${chg>=0?"var(--g2)":"var(--danger)"}">${chg>=0?"+":""}${chg.toFixed(2)}%</div>
+          <div style="font-family:var(--mono);font-size:13px;font-weight:700">${fmtUSD(cur)}</div>
+          <div style="font-family:var(--mono);font-size:10px;color:${chg>=0?"var(--green)":"var(--red)"}">${chg>=0?"+":""}${chg.toFixed(2)}%</div>
         </div>
       </div>`;
     }).join("")}
   </div>
 
-  ${state.trades.length > 0 ? `
+  ${state.trades.length>0?`
   <div class="card">
-    <div class="lbl">RECENT TRADES</div>
-    ${state.trades.slice(0,4).map(t=>`
+    <div class="sec-hdr">RECENT ACTIVITY</div>
+    ${state.trades.slice(0,3).map(t=>`
     <div class="tr">
-      <div>
-        <span class="tr-action" style="color:${t.action==="BUY"?"var(--g2)":"var(--danger)"}">${t.action}</span>
-        <span class="tr-coin" style="margin-left:6px">${t.symbol?.replace("/USD","")}</span>
-        <div class="tr-reason">${t.reason||t.strategy} · ${t.bot_id?.replace("BOT","B")}</div>
+      <div class="tr-top">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="tr-action ${t.action==="BUY"?"tr-buy":"tr-sell"}">${t.action}</span>
+          <span class="tr-coin">${t.symbol?.replace("/USD","")}</span>
+        </div>
+        <div class="tr-val">${fmtUSD(t.value||0)}</div>
       </div>
-      <div class="tr-val">${fmtUSD(t.value||0)}
-        ${t.profit!=null?`<div class="tr-pnl" style="color:${t.profit>=0?"var(--g2)":"var(--danger)"}">${t.profit>=0?"+":""}${fmtUSD(t.profit)}</div>`:""}
-      </div>
+      ${isSimple?`<div class="tr-plain">${plainEnglishTrade(t)}</div>`:`<div class="tr-reason">${t.reason||""}</div>`}
     </div>`).join("")}
-  </div>` : `
-  <div class="card">
-    <div class="lbl">TRADES</div>
-    <div style="font-family:var(--mono);font-size:11px;color:var(--muted);padding:12px 0">
-      No trades yet — bots are analyzing markets.<br>Check back after the next GitHub Actions run.
-    </div>
-  </div>`}
+  </div>`:""}
   `;
 }
 
-// ── BOTS ───────────────────────────────────────
+function daysSinceStart() {
+  const trades = state.trades;
+  if (!trades.length) return 1;
+  const first = new Date(trades[trades.length-1].timestamp||Date.now());
+  return Math.max(1, (Date.now()-first)/86400000);
+}
+
+// ═══════════════════════════════════════
+// BOTS
+// ═══════════════════════════════════════
 function renderBots() {
-  return BOT_IDS.map(bot=>{
-    const eq = state.equity[bot]||[];
-    const cur = eq.length > 0 ? eq[eq.length-1].equity : STARTING;
-    const stats = state.stats[bot]||{wins:0,losses:0};
-    const weights = state.weights[bot]||{};
-    const color = BOT_COLORS[bot];
-    const tt = (stats.wins||0)+(stats.losses||0);
-    const wr = tt > 0 ? (stats.wins||0)/tt*100 : 0;
-    const pnl = cur - STARTING;
-    const pnlP = pnl/STARTING*100;
-    const trades = state.trades.filter(t=>t.bot_id===bot);
-    const botSells = trades.filter(t=>t.action==="SELL");
-    const totalBotPnL = botSells.reduce((s,t)=>s+(t.profit||0),0);
-    const peakDD = stats.peak_equity > 0 ? (stats.peak_equity-cur)/stats.peak_equity*100 : 0;
+  const isSimple = state.mode === "simple";
+  const botExplains = {
+    BOT1_MOMENTUM: "This bot looks for coins that are moving strongly in one direction and rides that momentum. Think of it like surfing — it tries to catch a wave early and ride it up.",
+    BOT2_MEAN_REV: "This bot looks for coins that have fallen too far from their average price and bets they'll bounce back. Like a rubber band — stretch it too far and it snaps back.",
+    BOT3_TREND: "This bot only trades when the 4-hour chart confirms a strong trend. It's the most selective and patient bot — it waits for the clearest signals before acting."
+  };
+  return BOTS.map(b=>{
+    const eq = state.equity[b]||[];
+    const cur = eq.length>0?eq[eq.length-1].equity:100000;
+    const pnl = cur-100000; const pnlP = pnl/100000*100;
+    const s = state.stats[b]||{wins:0,losses:0};
+    const tt=(s.wins||0)+(s.losses||0);
+    const wr=tt>0?s.wins/tt*100:0;
+    const c = BOT_COLORS[b];
+    const bSells = state.trades.filter(t=>t.bot_id===b&&t.action==="SELL");
+    const bPnL = bSells.reduce((a,t)=>a+(t.profit||0),0);
     return `
-    <div class="card" style="border-color:${color}33">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+    <div class="bot-card" style="border-color:${c}33">
+      <div class="bot-header">
         <div>
-          <div style="font-size:14px;font-weight:800;color:${color};letter-spacing:2px">${BOT_NAMES[bot]}</div>
-          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px">${bot}</div>
+          <div class="bot-name" style="color:${c}">${BOT_NAMES[b]}</div>
+          <div class="bot-strategy">${b}</div>
         </div>
         <div style="text-align:right">
           <div style="font-family:var(--mono);font-size:16px;font-weight:700">${fmtUSD(cur)}</div>
-          <div style="font-family:var(--mono);font-size:10px;color:${pnl>=0?"var(--g2)":"var(--danger)"}">${pct(pnlP)}</div>
+          <div style="font-family:var(--mono);font-size:10px;color:${pnl>=0?"var(--green)":"var(--red)"}">${pct(pnlP)}</div>
         </div>
       </div>
-      <canvas id="spark-${bot}" height="40" style="margin-bottom:10px"></canvas>
-      <div class="g3" style="gap:6px;margin-bottom:10px">
-        <div style="background:var(--bg2);padding:7px;border-radius:6px">
-          <div class="lbl">WIN RATE</div>
-          <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:${wr>=50?"var(--g2)":"var(--danger)"}">${wr.toFixed(0)}%</div>
+      ${isSimple?`<div class="bot-explain">${botExplains[b]}</div>`:""}
+      <canvas id="spark-${b}" height="40" style="margin:8px 0"></canvas>
+      <div class="g3" style="gap:6px">
+        <div style="background:var(--bg3);padding:7px;border-radius:6px">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">WIN RATE</div>
+          <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:${wr>=50?"var(--green)":"var(--red)"}">${wr.toFixed(0)}%</div>
         </div>
-        <div style="background:var(--bg2);padding:7px;border-radius:6px">
-          <div class="lbl">TRADES</div>
-          <div style="font-family:var(--mono);font-size:13px;font-weight:700">${tt}</div>
+        <div style="background:var(--bg3);padding:7px;border-radius:6px">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">TRADES</div>
+          <div style="font-family:var(--mono);font-size:14px;font-weight:700">${tt}</div>
         </div>
-        <div style="background:var(--bg2);padding:7px;border-radius:6px">
-          <div class="lbl">P&L</div>
-          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:${totalBotPnL>=0?"var(--g2)":"var(--danger)"}">${totalBotPnL>=0?"+":""}${fmtUSD(totalBotPnL)}</div>
+        <div style="background:var(--bg3);padding:7px;border-radius:6px">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">P&L</div>
+          <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:${bPnL>=0?"var(--green)":"var(--red)"}">${bPnL>=0?"+":""}${fmtUSD(bPnL)}</div>
         </div>
       </div>
-      <div class="lbl">AI STRATEGY WEIGHTS</div>
-      ${Object.entries(weights).filter(([k])=>k.includes("weight")).map(([k,v])=>`
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
-          <div style="font-family:var(--mono);font-size:9px;color:var(--muted)">${k.replace("_weight","").toUpperCase()}</div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <div style="width:80px;height:3px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden">
-              <div style="width:${Math.min((v/2)*100,100)}%;height:100%;background:${color};border-radius:2px"></div>
-            </div>
-            <div style="font-family:var(--mono);font-size:9px;color:${color}">${(v*100).toFixed(0)}%</div>
-          </div>
+      ${!isSimple?`
+      <div style="margin-top:8px">
+        <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:4px">AI WEIGHTS</div>
+        ${Object.entries(state.weights[b]||{}).filter(([k])=>k.includes("weight")).map(([k,v])=>`
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;margin-bottom:3px">
+          <span style="color:var(--muted)">${k.replace("_weight","")}</span>
+          <span style="color:${c}">${(v*100).toFixed(0)}%</span>
         </div>`).join("")}
-      ${Object.keys(weights).filter(k=>k.includes("weight")).length===0?
-        `<div style="font-family:var(--mono);font-size:10px;color:var(--muted)">Weights update after first AI brain run (Sunday)</div>`:""}
-      <div class="lbl" style="margin-top:8px">DRAWDOWN FROM PEAK</div>
-      <div class="pbar">
-        <div class="pfill" style="width:${Math.min(peakDD,100)}%;background:${peakDD>10?"var(--danger)":peakDD>5?"var(--g3)":"var(--g2)"}"></div>
-      </div>
-      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px">${peakDD.toFixed(1)}% from peak ${fmtUSD(stats.peak_equity||STARTING)}</div>
+      </div>`:""}
     </div>`;
   }).join("");
 }
 
-// ── TRADES ─────────────────────────────────────
+// ═══════════════════════════════════════
+// TRADES
+// ═══════════════════════════════════════
 function renderTrades() {
-  const sells = state.trades.filter(t=>t.action==="SELL");
+  const isSimple = state.mode === "simple";
   const buys = state.trades.filter(t=>t.action==="BUY");
+  const sells = state.trades.filter(t=>t.action==="SELL");
   const wins = sells.filter(t=>(t.profit||0)>0);
-  return `
-  <div class="card card-cyan">
-    <div class="lbl">TRADE LOG — ${state.trades.length} TOTAL</div>
-    <div class="g3" style="gap:6px;margin-top:4px">
-      <div style="background:var(--bg2);padding:8px;border-radius:6px;text-align:center">
-        <div class="lbl">BUYS</div>
-        <div style="font-family:var(--mono);font-size:16px;color:var(--g2)">${buys.length}</div>
-      </div>
-      <div style="background:var(--bg2);padding:8px;border-radius:6px;text-align:center">
-        <div class="lbl">SELLS</div>
-        <div style="font-family:var(--mono);font-size:16px;color:var(--danger)">${sells.length}</div>
-      </div>
-      <div style="background:var(--bg2);padding:8px;border-radius:6px;text-align:center">
-        <div class="lbl">WIN %</div>
-        <div style="font-family:var(--mono);font-size:16px;color:${wins.length/Math.max(sells.length,1)*100>=50?"var(--g2)":"var(--danger)"}">${sells.length>0?(wins.length/sells.length*100).toFixed(0):0}%</div>
-      </div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="lbl">ALL TRADES</div>
-    ${state.trades.length === 0 ?
-      `<div style="font-family:var(--mono);font-size:11px;color:var(--muted);padding:16px 0">No trades yet. Bots run every 15 minutes via GitHub Actions.</div>` :
-      state.trades.slice(0,30).map(t=>{
-        const color = BOT_COLORS[t.bot_id]||"#fff";
-        const sym = t.symbol?.replace("/USD","");
-        const ts = t.timestamp ? new Date(t.timestamp).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}) : "";
-        return `<div class="tr">
-          <div>
-            <div style="display:flex;gap:6px;align-items:center">
-              <span class="tr-action" style="color:${t.action==="BUY"?"var(--g2)":"var(--danger)"}">${t.action}</span>
-              <span class="tr-coin" style="color:${color}">${sym}</span>
-              <span style="font-family:var(--mono);font-size:8px;color:${color};background:${color}18;padding:1px 5px;border-radius:3px">${BOT_NAMES[t.bot_id]||t.bot_id}</span>
-            </div>
-            <div class="tr-reason">${t.reason||t.strategy||""} · ${ts}</div>
-          </div>
-          <div class="tr-val">${fmtUSD(t.value||0)}
-            ${t.profit!=null?`<div class="tr-pnl" style="color:${t.profit>=0?"var(--g2)":"var(--danger)"}">${t.profit>=0?"+":""}${fmtUSD(t.profit)}</div>`:""}
-          </div>
-        </div>`;
-      }).join("")
-    }
-  </div>`;
-}
+  const totalPnL = sells.reduce((s,t)=>s+(t.profit||0),0);
 
-// ── REPORT ─────────────────────────────────────
-function renderReport() {
-  const r = state.report;
   return `
-  <div class="card card-cyan">
-    <div class="lbl">AI BRAIN — WEEKLY ANALYSIS</div>
-    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:10px">
-      Claude analyzes all trade history every Sunday and rewrites strategy weights.
-      Reports are generated automatically and saved here.
+  <div class="card card-green">
+    <div class="sec-hdr">TRADE SUMMARY</div>
+    ${isSimple?`<div class="learn-box"><div class="learn-label">💡 HOW TRADING WORKS</div>
+    The bots buy crypto when signals say it's cheap, then sell when it's gone up (hopefully). 
+    BUY = opening a position. SELL = closing it. P&L only shows on SELL trades.
+    Win Rate above 50% means more winning trades than losing ones.
+    </div>`:""}
+    <div class="g2" style="margin-top:10px;gap:8px">
+      <div class="stat-box"><div class="stat-lbl">OPEN</div><div class="stat-val" style="color:var(--blue)">${buys.length-sells.length}</div><div class="stat-sub">positions held</div></div>
+      <div class="stat-box"><div class="stat-lbl">CLOSED</div><div class="stat-val" style="color:var(--muted)">${sells.length}</div><div class="stat-sub">trades complete</div></div>
+      <div class="stat-box"><div class="stat-lbl">WINS</div><div class="stat-val" style="color:var(--green)">${wins.length}</div><div class="stat-sub">profitable</div></div>
+      <div class="stat-box"><div class="stat-lbl">TOTAL P&L</div><div class="stat-val" style="font-size:16px;color:${totalPnL>=0?"var(--green)":"var(--red)"}">${totalPnL>=0?"+":""}${fmtUSD(totalPnL)}</div><div class="stat-sub">realized</div></div>
     </div>
-    ${r ? `
-    <div style="font-family:var(--mono);font-size:9px;color:var(--g1);margin-bottom:8px">
-      Week ending: ${new Date(r.week_ending).toLocaleDateString()}
-    </div>
-    <div class="report-box">${r.report_text}</div>
-    ` : `
-    <div class="report-box" style="color:var(--muted)">
-      No AI report yet. The AI Brain runs every Sunday automatically,
-      or you can trigger it manually in GitHub Actions by running the workflow
-      with "run_ai_brain" set to true.
-    </div>`}
   </div>
   <div class="card">
-    <div class="lbl">CURRENT STRATEGY WEIGHTS</div>
-    ${BOT_IDS.map(bot=>{
-      const w = state.weights[bot]||{};
-      const color = BOT_COLORS[bot];
-      return `<div style="margin-bottom:12px">
-        <div style="font-size:11px;font-weight:700;color:${color};letter-spacing:1px;margin-bottom:6px">${BOT_NAMES[bot]}</div>
-        ${Object.entries(w).length > 0 ?
-          Object.entries(w).map(([k,v])=>`
-          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;margin-bottom:3px">
-            <span style="color:var(--muted)">${k}</span>
-            <span style="color:${color}">${typeof v==="number"?v.toFixed(2):v}</span>
-          </div>`).join("") :
-          `<div style="font-family:var(--mono);font-size:9px;color:var(--muted)">No weights yet — updates after first AI run</div>`
-        }
+    <div class="sec-hdr">ALL TRADES</div>
+    ${state.trades.length===0?`<div style="font-family:var(--mono);font-size:11px;color:var(--muted);padding:16px 0">
+      No trades yet — bots run every 15 minutes and only trade when signals are strong enough.
+    </div>`:state.trades.slice(0,50).map(t=>{
+      const c = BOT_COLORS[t.bot_id]||"var(--green)";
+      const ts = t.timestamp?new Date(t.timestamp).toLocaleString([],{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}):"";
+      return `<div class="tr">
+        <div class="tr-top">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="tr-action ${t.action==="BUY"?"tr-buy":"tr-sell"}">${t.action}</span>
+            <span class="tr-coin" style="color:${c}">${t.symbol?.replace("/USD","")}</span>
+            <span style="font-family:var(--mono);font-size:8px;color:var(--muted)">${ts}</span>
+          </div>
+          <div>
+            <div class="tr-val">${fmtUSD(t.value||0)}</div>
+            ${t.profit!=null?`<div class="tr-pnl" style="color:${t.profit>=0?"var(--green)":"var(--red)"}">${t.profit>=0?"+":""}${fmtUSD(t.profit)}</div>`:""}
+          </div>
+        </div>
+        ${isSimple?`<div class="tr-plain">${plainEnglishTrade(t)}</div>`:`<div class="tr-reason">${t.reason||""}</div>`}
       </div>`;
     }).join("")}
   </div>`;
 }
 
-// ── ROADMAP ─────────────────────────────────────
-function renderRoadmap() {
-  const total = totalEquity();
-  const startTotal = STARTING * BOT_IDS.length;
-  const pnlP = (total-startTotal)/startTotal*100;
-  const steps = [
-    {n:1,t:"Paper Trading — Build Track Record",done:true,color:"var(--g2)",
-     d:"3 bots running 24/7 on Alpaca paper trading. Real prices, zero risk. Building proven track record."},
-    {n:2,t:"Pass Prop Challenge Simulation",done:pnlP>=10,color:"var(--g1)",
-     d:`Hit +10% profit target without exceeding 5% daily or 10% total drawdown. Current: ${pct(pnlP)}`},
-    {n:3,t:"Apply to Apex Trader Funding",done:false,color:"var(--g3)",
-     d:"Pass the simulation 3x consistently, then apply. Apex runs ~$20 promos. $50K-$300K funded accounts available."},
-    {n:4,t:"Deposit Real $200 on Alpaca",done:false,color:"#ff6b35",
-     d:"Switch ALPACA_PAPER to false in GitHub Secrets. Same strategy, real money. Start conservative."},
-    {n:5,t:"First Prop Payout",done:false,color:"var(--purple)",
-     d:"5% monthly on $50K funded = $2,500/month. Keep 90% = $2,250. Reinvest to scale accounts."},
-    {n:6,t:"Match Job Income — Year 3-4",done:false,color:"var(--g2)",
-     d:"$100-200K funded, $3,150-$6,300/month take-home. The path to staying home with your kids."},
-  ];
+// ═══════════════════════════════════════
+// JOURNAL / LOG
+// ═══════════════════════════════════════
+function renderLog() {
+  const sells = state.trades.filter(t=>t.action==="SELL");
+  const buys  = state.trades.filter(t=>t.action==="BUY");
+  const wins  = sells.filter(t=>(t.profit||0)>0);
+  const losses= sells.filter(t=>(t.profit||0)<=0);
+  const totalPnL = sells.reduce((s,t)=>s+(t.profit||0),0);
+  const wr = sells.length>0?wins.length/sells.length*100:0;
+
+  // Build log entries from all trades
+  const logEntries = [...state.trades].slice(0,30).map(t=>{
+    const isSell = t.action==="SELL";
+    const hasProfit = (t.profit||0)!==0;
+    const won = (t.profit||0)>0;
+    let type = isSell&&hasProfit ? (won?"win":"loss") : "buy";
+    let icon = type==="win"?"✅":type==="loss"?"❌":"📈";
+    let cls = type==="win"?"log-win":type==="loss"?"log-loss":"log-buy";
+    const sym = t.symbol?.replace("/USD","");
+    const ts = t.timestamp?new Date(t.timestamp).toLocaleString([],{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}):"";
+
+    let title = t.action==="BUY"?`Bought ${sym}`:won?`Sold ${sym} for profit`:`Sold ${sym} at a loss`;
+    let detail = `${ts} · ${t.bot_id?.replace("BOT","")} · ${fmtUSD(t.value||0)}`;
+    if (t.profit!=null) detail += ` · P&L: ${t.profit>=0?"+":""}${fmtUSD(t.profit)}`;
+
+    let lesson = "";
+    if (type==="win") lesson = `✅ This trade worked! The signal was correct — ${t.reason||"technical signals aligned"}.`;
+    else if (type==="loss") lesson = `📖 This trade lost money. That's normal — even the best traders lose ~40% of trades. What matters is wins are bigger than losses.`;
+    else lesson = `⏳ This position is still open. The bot is waiting for the right moment to sell.`;
+
+    return `<div class="log-item">
+      <div class="log-icon ${cls}">${icon}</div>
+      <div style="flex:1">
+        <div class="log-title">${title}</div>
+        <div class="log-detail">${detail}</div>
+        <div class="log-detail" style="margin-top:2px;color:var(--green3)">${t.reason||""}</div>
+        <div class="log-lesson">${lesson}</div>
+      </div>
+    </div>`;
+  }).join("");
+
   return `
-  <div class="card card-gold" style="margin-bottom:14px">
-    <div class="lbl">YOUR MISSION</div>
-    <div style="font-size:15px;font-weight:800;color:var(--g3)">$200 → FUNDED TRADER → STAY HOME</div>
-    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px">Pay off $400K house · $150K/year · Be present for your kids</div>
-    <div class="pbar" style="margin-top:10px">
-      <div class="pfill" style="width:${Math.min(Math.max(pnlP,0),100)}%;background:var(--g3)"></div>
+  <div class="card card-green">
+    <div class="sec-hdr">TRADING JOURNAL</div>
+    <div class="learn-box"><div class="learn-label">📓 WHAT IS THIS?</div>
+    Professional traders keep a journal of every trade to learn from successes and mistakes.
+    This tab shows every action your bots took with plain-English explanations of what happened and why.
     </div>
-    <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px">Progress toward 10% prop challenge target: ${pct(Math.max(pnlP,0))}</div>
+    <div class="g3" style="margin-top:12px;gap:6px">
+      <div class="stat-box" style="text-align:center">
+        <div style="font-size:22px">✅</div>
+        <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--green)">${wins.length}</div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">WINS</div>
+      </div>
+      <div class="stat-box" style="text-align:center">
+        <div style="font-size:22px">❌</div>
+        <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--red)">${losses.length}</div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">LOSSES</div>
+      </div>
+      <div class="stat-box" style="text-align:center">
+        <div style="font-size:22px">📈</div>
+        <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--blue)">${buys.length-sells.length}</div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">OPEN</div>
+      </div>
+    </div>
   </div>
-  ${steps.map(s=>`
-  <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)">
-    <div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
-      background:${s.done?s.color+"33":"var(--bg2)"};border:1px solid ${s.done?s.color:s.color+"44"};
-      font-size:11px;font-weight:800;color:${s.done?s.color:"var(--muted)"}">
-      ${s.done?"✓":s.n}
-    </div>
-    <div style="flex:1">
-      <div style="font-size:12px;font-weight:700;color:${s.done?s.color:"var(--text)"};margin-bottom:4px">${s.t}</div>
-      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.5">${s.d}</div>
-    </div>
-  </div>`).join("")}
-  <div style="padding:14px 0;font-family:var(--mono);font-size:9px;color:var(--muted);line-height:1.6">
-    Year 1: ~$9,450 · Year 2: ~$37,800 · Year 3: ~$75,600 · Year 4: ~$113,400 · Year 5: ~$151,200
+  <div class="card">
+    <div class="sec-hdr">ACTIVITY LOG</div>
+    ${state.trades.length===0?`<div style="font-family:var(--mono);font-size:11px;color:var(--muted);padding:16px 0">No activity yet. Check back after the bots have traded!</div>`:logEntries}
   </div>`;
 }
 
-// ═══════════════════════════════════════════════
-// NAVIGATION & INIT
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════
+// LEARN / GLOSSARY
+// ═══════════════════════════════════════
+function renderLearn() {
+  const terms = [
+    {term:"RSI (Relative Strength Index)",
+     def:"A number from 0-100 that measures if something is overbought or oversold. Below 30 = oversold (potential buy opportunity). Above 70 = overbought (potential sell opportunity). Think of it like a rubber band — stretched too far in either direction, it tends to snap back.",
+     ex:"Example: RSI of 17 = deeply oversold. The bot sees this as a strong buy signal."},
+    {term:"EMA (Exponential Moving Average)",
+     def:"The average price of a coin over a set period, with more weight given to recent prices. When the short EMA crosses above the long EMA, it's called a 'golden cross' — a classic buy signal. When short crosses below long, it's a 'death cross' — a sell signal.",
+     ex:"Example: 9 EMA > 21 EMA > 50 EMA = bullish EMA alignment = all averages pointing up."},
+    {term:"Bollinger Bands (BB)",
+     def:"Three lines around a price chart — an upper band, middle line, and lower band. When price touches the lower band, it's usually considered oversold. When it touches the upper band, overbought. The bots buy near the lower band and sell near the upper band.",
+     ex:"Example: Price below BB lower = potential bounce incoming = buy signal."},
+    {term:"Fear & Greed Index",
+     def:"A number from 0-100 measuring overall crypto market emotion. 0-25 = Extreme Fear (everyone is panic selling — often a good time to buy). 75-100 = Extreme Greed (everyone is buying — often a good time to sell). Contrarian thinking: buy when others fear, sell when others are greedy.",
+     ex:"Example: F&G = 25 (Extreme Fear) → bots get a buying bonus signal."},
+    {term:"Win Rate",
+     def:"The percentage of your closed trades that made money. 50% means half your trades win, half lose. Professional traders aim for 50-65%. Win rate alone doesn't tell the whole story — what matters is that your winning trades make more than your losing trades lose.",
+     ex:"Example: 60% win rate with $100 average win and $50 average loss = very profitable system."},
+    {term:"Drawdown",
+     def:"How much your account dropped from its highest point. If you had $110K and it dropped to $99K, your drawdown is $11K or 10%. Prop firms have strict drawdown limits — if you exceed them, you fail the challenge. The bots automatically reduce position sizes as drawdown increases.",
+     ex:"Example: Apex Trader Funding allows max $2,500 trailing drawdown on a $50K account."},
+    {term:"Kelly Criterion",
+     def:"A mathematical formula that tells you exactly how much of your account to risk on each trade based on your historical win rate. It prevents you from betting too much (going bust) or too little (not growing fast enough). The bots use half-Kelly to be conservative.",
+     ex:"Example: 55% win rate → Kelly says bet 10% → Half-Kelly = 5% per trade."},
+    {term:"Paper Trading",
+     def:"Trading with fake/simulated money to test a strategy without real risk. Your bots are currently paper trading with $100,000 per bot (fake). This builds a track record you can show to prop firms. Once results are consistently good, you switch to real money.",
+     ex:"Example: Your $300K paper account = 3 bots × $100K simulated balance each."},
+    {term:"Prop Firm (Proprietary Trading Firm)",
+     def:"A company that gives skilled traders access to large amounts of capital (their money) in exchange for a share of profits. You pay a small evaluation fee ($20-200), pass a trading challenge, then get funded with $50K-$300K. You keep 80-100% of profits.",
+     ex:"Example: Pass Apex evaluation → get $50K funded → make 5%/month → earn $2,250/month."},
+    {term:"BTC Dominance",
+     def:"Bitcoin's share of the total crypto market cap. High dominance (>55%) means Bitcoin is strong but altcoins are weak. Low dominance (<45%) often signals an 'altseason' where smaller coins outperform. Bots use this to decide whether to focus on BTC or altcoins.",
+     ex:"Example: BTC Dom 57.8% = cautious on altcoins like ETH, SOL, AVAX."},
+    {term:"ADX (Average Directional Index)",
+     def:"Measures trend strength from 0-100. Below 20 = no real trend (ranging market). Above 25 = strong trend forming. Above 40 = very strong trend. The bots use ADX to avoid trading in choppy, directionless markets where signals are unreliable.",
+     ex:"Example: ADX 35 + bullish EMA = strong uptrend confirmed = good time to buy."},
+    {term:"VWAP (Volume Weighted Average Price)",
+     def:"The average price weighted by how much was traded at each price. Institutional traders (banks, hedge funds) use VWAP as a benchmark. Price above VWAP = bullish (institutions are net buyers). Price below VWAP = bearish. Following institutional money is smart.",
+     ex:"Example: BTC price above VWAP = institutional support = adds to buy signal."},
+  ];
+
+  return `
+  <div class="card card-blue">
+    <div class="sec-hdr">TRADING GLOSSARY</div>
+    <div class="learn-box"><div class="learn-label">📚 LEARNING CENTER</div>
+    Every term your bots use, explained in plain English. Tap each one to understand exactly what your trading system is doing and why. The more you understand these, the better you'll get at evaluating your bot's performance.
+    </div>
+  </div>
+  <div class="card">
+    ${terms.map(t=>`
+    <div class="gloss-item">
+      <div class="gloss-term">${t.term}</div>
+      <div class="gloss-def">${t.def}</div>
+      <div class="gloss-example">${t.ex}</div>
+    </div>`).join("")}
+  </div>`;
+}
+
+// ═══════════════════════════════════════
+// ROADMAP
+// ═══════════════════════════════════════
+function renderRoadmap() {
+  const total = totalEquity();
+  const pnlP = (total-START_TOTAL)/START_TOTAL*100;
+  const steps = [
+    {status:"done",title:"Launch 3 Crypto Bots",
+     desc:"Built and deployed 3 autonomous trading bots (Momentum, Mean Reversion, Trend Following) running 24/7 on GitHub Actions. All bots connected to Alpaca paper trading and saving data to Supabase."},
+    {status:"doing",title:"Build a 90-Day Track Record",
+     desc:`Paper trade consistently for 90 days. Target: +10% return with max 15% drawdown. Show consistent profitability before applying for real funding. Current progress: ${pnlP.toFixed(1)}% return.`},
+    {status:"doing",title:"Launch Futures Bot System",
+     desc:"Deploy 3 futures bots trading ES (S&P 500), NQ (Nasdaq), and Gold on Tradovate. Futures have better tax treatment and are required for most prop firm evaluations."},
+    {status:"next",title:"Apply to Prop Firm",
+     desc:"Once track record proves consistency, apply to Apex Trader Funding or The5ers. Evaluation fee ~$20-100. Bots take the challenge automatically. Target: $50K funded account."},
+    {status:"future",title:"First Funded Account",
+     desc:"Pass the prop firm challenge. Get funded with $50,000. Keep 80-100% of profits. First month target: $2,500+ take-home. This is the beginning of real trading income."},
+    {status:"future",title:"Scale to Multiple Accounts",
+     desc:"Apex allows up to 20 funded accounts simultaneously. Scale from 1 to 5+ accounts over 12-18 months. 5 accounts × $50K × 5%/month = $12,500/month gross income."},
+    {status:"future",title:"$150K+/Year Income",
+     desc:"With $300K+ in funded capital at 5% monthly: $15,000/month gross, keep 90% = $13,500/month = $162,000/year. Fully automated — bots do all the trading while you focus on anything you want."},
+  ];
+
+  const statusStyle = {
+    done: {cls:"rm-done", icon:"✓"},
+    doing: {cls:"rm-next", icon:"→"},
+    next: {cls:"rm-next", icon:"○"},
+    future: {cls:"rm-future", icon:"·"},
+  };
+
+  return `
+  <div class="card card-gold">
+    <div class="sec-hdr">YOUR MISSION</div>
+    <div style="font-size:22px;font-weight:800;color:var(--gold);line-height:1.2">BUILD A $150K+/YEAR AUTOMATED TRADING INCOME</div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:6px">
+      3 bots → prop firm → funded account → scale → financial freedom
+    </div>
+    <div style="margin-top:12px">
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:4px">
+        <span>PAPER TRADING PROGRESS</span><span>${Math.min(pnlP,10).toFixed(1)}% / 10% TARGET</span>
+      </div>
+      <div class="pbar">
+        <div class="pfill" style="width:${Math.min(Math.max(pnlP,0)/10*100,100)}%;background:var(--gold)"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sec-hdr">THE PATH</div>
+    ${steps.map((s,i)=>{
+      const st = statusStyle[s.status];
+      return `<div class="rm-step">
+        <div class="rm-num ${st.cls}">${st.icon}</div>
+        <div>
+          <div class="rm-title" style="color:${s.status==="done"?"var(--green)":s.status==="doing"?"var(--gold)":s.status==="next"?"var(--blue)":"var(--muted)"}">${s.title}</div>
+          <div class="rm-desc">${s.desc}</div>
+        </div>
+      </div>`;
+    }).join("")}
+  </div>
+
+  <div class="card">
+    <div class="sec-hdr">INCOME PROJECTIONS</div>
+    ${[
+      {label:"Now",detail:"Paper trading, zero risk, building track record",income:"$0/month"},
+      {label:"Month 6-9",detail:"First funded account $50K at 5%/month",income:"~$2,250/mo"},
+      {label:"Year 2",detail:"3 funded accounts $150K total",income:"~$6,750/mo"},
+      {label:"Year 3",detail:"6 funded accounts $300K total",income:"~$13,500/mo"},
+      {label:"Year 4-5",detail:"10+ accounts, fully automated",income:"$150K+/yr"},
+    ].map(r=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-size:13px;font-weight:700">${r.label}</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted)">${r.detail}</div>
+      </div>
+      <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--green)">${r.income}</div>
+    </div>`).join("")}
+  </div>`;
+}
+
+// ═══════════════════════════════════════
+// RENDER ENGINE
+// ═══════════════════════════════════════
+function render() {
+  updateNav();
+  const c = document.getElementById("content");
+  if (state.loading) {
+    c.innerHTML=`<div class="loading"><div class="spinner"></div>Loading your trading data...</div>`;
+    return;
+  }
+  switch(state.tab) {
+    case "dash":    c.innerHTML = renderDash();    break;
+    case "bots":    c.innerHTML = renderBots();    break;
+    case "trades":  c.innerHTML = renderTrades();  break;
+    case "log":     c.innerHTML = renderLog();     break;
+    case "learn":   c.innerHTML = renderLearn();   break;
+    case "roadmap": c.innerHTML = renderRoadmap(); break;
+  }
+  // Draw sparklines
+  const allEq = [];
+  const maxLen = Math.max(...BOTS.map(b=>(state.equity[b]||[]).length), 1);
+  if (maxLen > 1) {
+    for (let i=0; i<maxLen; i++) {
+      let s=0;
+      for (const b of BOTS) {
+        const eq = state.equity[b]||[];
+        const idx = Math.round(i*(eq.length-1)/(maxLen-1));
+        s += eq[idx]?.equity||100000;
+      }
+      allEq.push(s);
+    }
+    drawSpark("spark-total", allEq, "#1aff6e");
+  }
+  for (const b of BOTS) {
+    const eq = (state.equity[b]||[]).map(e=>e.equity);
+    if (eq.length>1) drawSpark(`spark-${b}`, eq, BOT_COLORS[b]);
+  }
+}
+
+function updateNav() {
+  const tabNames = ["dash","bots","trades","log","learn","roadmap"];
+  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",tabNames[i]===state.tab));
+  document.querySelectorAll(".bn").forEach((b,i)=>b.classList.toggle("active",tabNames[i]===state.tab));
+}
+
 function switchTab(t) {
-  state.activeTab = t;
+  state.tab = t;
   render();
   document.getElementById("content").scrollTop = 0;
 }
 
-// Auto-refresh every 5 minutes
-setInterval(() => { loadData(); }, 5 * 60 * 1000);
+function updateTime() {
+  const el = document.getElementById("timeLbl");
+  if (el) el.textContent = new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+}
 
-// Initial load
+setInterval(updateTime, 1000);
+setInterval(loadData, 5*60*1000);
+updateTime();
 loadData();
 </script>
 </body>
