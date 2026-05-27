@@ -1,7 +1,8 @@
 """
-APEX BOT 1 — MOMENTUM v2 (Fixed Alpaca API)
+APEX BOT 1 — MOMENTUM v2 (Fixed timeframe)
+Uses 15-min bars to get sufficient data on free Alpaca tier
 """
-import os, sys, math
+import os, sys
 from datetime import datetime, timezone
 from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import MarketOrderRequest
@@ -31,37 +32,43 @@ def kelly_size(wr, avg_win, avg_loss):
     b = avg_win/avg_loss; p = wr/100; q = 1-p
     return max(0.01, min((b*p-q)/b*0.5, 0.20))
 
-def get_bars(data_client, symbol, timeframe, limit):
-    """Fixed Alpaca bar fetching — handles new API response format"""
-    try:
-        req = CryptoBarsRequest(
-            symbol_or_symbols=symbol,
-            timeframe=timeframe,
-            limit=limit
-        )
-        bars_response = data_client.get_crypto_bars(req)
-        # Handle both old and new Alpaca API response formats
-        if hasattr(bars_response, 'data'):
-            bar_dict = bars_response.data
-        elif hasattr(bars_response, '__iter__'):
-            bar_dict = dict(bars_response)
-        else:
-            bar_dict = bars_response
-
-        # Try different ways to get the bars for this symbol
-        if isinstance(bar_dict, dict):
-            bar_list = bar_dict.get(symbol, [])
-        else:
-            # Try iterating directly
+def get_bars(data_client, symbol):
+    """Fetch bars using timeframe that works with free Alpaca tier"""
+    for timeframe, limit in [
+        (TimeFrame.Minute, 200),   # 1-min bars, last 200
+        (TimeFrame(5, "Min"), 100), # 5-min bars
+        (TimeFrame(15, "Min"), 60), # 15-min bars
+    ]:
+        try:
+            req = CryptoBarsRequest(
+                symbol_or_symbols=symbol,
+                timeframe=timeframe,
+                limit=limit
+            )
+            resp = data_client.get_crypto_bars(req)
+            # Handle response format
+            bars = []
             try:
-                bar_list = list(bar_dict[symbol])
-            except (KeyError, TypeError):
-                bar_list = []
+                if hasattr(resp, '__iter__'):
+                    for sym, bar_list in resp:
+                        if sym == symbol:
+                            bars = list(bar_list)
+                            break
+                if not bars and hasattr(resp, 'data'):
+                    bars = list(resp.data.get(symbol, []))
+            except Exception:
+                try:
+                    bars = list(resp[symbol])
+                except Exception:
+                    bars = []
 
-        return bar_list
-    except Exception as e:
-        print(f"    Bar fetch error for {symbol}: {e}")
-        return []
+            if len(bars) >= 30:
+                print(f"    Got {len(bars)} bars for {symbol} ({timeframe})")
+                return bars
+        except Exception as e:
+            print(f"    Timeframe {timeframe} failed: {e}")
+            continue
+    return []
 
 def run_bot():
     db = Database()
@@ -79,7 +86,6 @@ def run_bot():
     fear_greed    = get_fear_greed()
     market_data   = get_crypto_prices_and_metrics()
     btc_dominance = get_btc_dominance()
-
     fg_val = fear_greed.get("value", 50) if isinstance(fear_greed, dict) else 50
     print(f"  [DATA] F&G: {fg_val} | BTC Dom: {btc_dominance:.1f}%")
 
@@ -88,25 +94,23 @@ def run_bot():
     dd = (peak-equity)/peak if peak>0 else 0
     base_risk = 0.3 if dd>0.15 else 0.5 if dd>0.10 else 0.7 if dd>0.06 else 1.0
 
-    btc_change = 0
-    if isinstance(market_data, dict):
-        btc_change = market_data.get("bitcoin",{}).get("usd_24h_change",0) or 0
+    btc_change = market_data.get("bitcoin",{}).get("usd_24h_change",0) or 0 if isinstance(market_data,dict) else 0
     macro = get_macro_regime(btc_dominance, fg_val, btc_change)
     final_risk = base_risk * macro["risk_multiplier"]
     print(f"  [RISK] DD:{dd*100:.1f}% | Macro:{macro['regime']} | Risk:{final_risk:.2f}x")
 
-    tt  = stats.get("wins",0)+stats.get("losses",0)
-    wr  = stats.get("wins",0)/tt*100 if tt>5 else 52.0
-    k   = kelly_size(wr, stats.get("avg_win_pct",0.065), stats.get("avg_loss_pct",0.033))
+    tt = stats.get("wins",0)+stats.get("losses",0)
+    wr = stats.get("wins",0)/tt*100 if tt>5 else 52.0
+    k  = kelly_size(wr, stats.get("avg_win_pct",0.065), stats.get("avg_loss_pct",0.033))
 
     positions = {p.symbol:p for p in trading.get_all_positions()}
     trades = []
 
     for symbol in SYMBOLS:
         try:
-            bar_list = get_bars(data_c, symbol, TimeFrame.Hour, 100)
+            bar_list = get_bars(data_c, symbol)
             if len(bar_list) < 30:
-                print(f"  {symbol}: insufficient data ({len(bar_list)} bars)")
+                print(f"  {symbol}: insufficient data ({len(bar_list)} bars) — skipping")
                 continue
 
             closes  = [float(b.close)  for b in bar_list]
@@ -114,13 +118,14 @@ def run_bot():
             cur     = closes[-1]
             atr     = calc_atr(closes)
 
-            sig = get_composite_signal(symbol, closes, volumes,
-                                        market_data if isinstance(market_data,dict) else {},
-                                        fear_greed if isinstance(fear_greed,dict) else {"value":50,"score":0,"days_extreme_fear":0},
-                                        btc_dominance, weights)
+            fg_dict = fear_greed if isinstance(fear_greed, dict) else {"value":fg_val,"score":0,"days_extreme_fear":0}
+            md_dict = market_data if isinstance(market_data, dict) else {}
 
+            sig = get_composite_signal(symbol, closes, volumes, md_dict, fg_dict, btc_dominance, weights)
             held = symbol in positions
-            print(f"  {symbol}: ${cur:.2f} | {sig['action']} (score:{sig['score']:.2f}) | {' | '.join(sig['reasons'][:1])}")
+
+            print(f"  {symbol}: ${cur:.2f} | {sig['action']} (score:{sig['score']:.2f} conf:{sig['confidence']:.0%})")
+            if sig['reasons']: print(f"    {' | '.join(sig['reasons'][:2])}")
 
             if sig["action"] == "BUY" and not held and cash > 50:
                 spend = min(equity*k*final_risk, equity*0.20, cash*0.95)
@@ -137,13 +142,12 @@ def run_bot():
                              "timestamp":datetime.now(timezone.utc).isoformat()}
                         db.save_trade(t); trades.append(t); cash -= spend
                         print(f"    ✅ BUY {qty:.6f} {symbol} @ ${cur:.2f}")
-                    except Exception as e: print(f"    ❌ Order failed: {e}")
+                    except Exception as e: print(f"    ❌ {e}")
 
             elif held and sig["action"] == "SELL":
-                pos   = positions[symbol]
-                qty   = float(pos.qty)
-                entry = float(pos.avg_entry_price)
-                profit= (cur-entry)*qty
+                pos = positions[symbol]
+                qty = float(pos.qty); entry = float(pos.avg_entry_price)
+                profit = (cur-entry)*qty
                 try:
                     trading.submit_order(MarketOrderRequest(
                         symbol=symbol, qty=qty,
@@ -181,7 +185,7 @@ def run_bot():
         except Exception as e: print(f"  ❌ Error {symbol}: {e}")
 
     db.save_equity_snapshot(BOT_ID, equity, cash)
-    print(f"\n[{BOT_ID}] Done. {len(trades)} trades. F&G:{fg_val} | Macro:{macro['regime']}")
+    print(f"\n[{BOT_ID}] Done. {len(trades)} trades.")
     return trades
 
 if __name__ == "__main__":
