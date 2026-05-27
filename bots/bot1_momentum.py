@@ -128,7 +128,7 @@ def run_bot():
             if sig['reasons']: print(f"    {' | '.join(sig['reasons'][:2])}")
 
             if sig["action"] == "BUY" and not held and cash > 50:
-                spend = min(equity*k*final_risk, equity*0.20, cash*0.95)
+                spend = min(equity*k*final_risk, equity*0.05, cash*0.30, 500)
                 if spend > 20:
                     qty = round(spend/cur, 6)
                     try:
